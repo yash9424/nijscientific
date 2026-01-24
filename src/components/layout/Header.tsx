@@ -22,8 +22,50 @@ export function Header() {
     setMounted(true)
   }, [])
 
+  const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+
+    // @ts-ignore
+    if (!document.startViewTransition) {
+      setTheme(newTheme);
+      return;
+    }
+
+    const x = e.clientX;
+    const y = e.clientY;
+    const right = window.innerWidth - x;
+    const bottom = window.innerHeight - y;
+    const maxRadius = Math.hypot(
+      Math.max(x, right),
+      Math.max(y, bottom)
+    );
+
+    // @ts-ignore
+    const transition = document.startViewTransition(() => {
+      setTheme(newTheme);
+    });
+
+    transition.ready.then(() => {
+      const clipPath = [
+        `circle(0px at ${x}px ${y}px)`,
+        `circle(${maxRadius}px at ${x}px ${y}px)`,
+      ];
+
+      document.documentElement.animate(
+        {
+          clipPath: clipPath,
+        },
+        {
+          duration: 500,
+          easing: "ease-in-out",
+          pseudoElement: "::view-transition-new(root)",
+        }
+      );
+    });
+  };
+
   return (
-    <header className="bg-white dark:bg-deep-twilight-100 shadow-md sticky top-0 z-50 transition-colors duration-300">
+    <header className="bg-white dark:bg-deep-twilight-100 shadow-md sticky top-0 z-50">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5 text-2xl font-bold text-deep-twilight dark:text-sky-aqua">
@@ -34,7 +76,7 @@ export function Header() {
         </div>
         <div className="flex items-center gap-4 lg:hidden">
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={toggleTheme}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-deep-twilight-200 transition-colors"
             aria-label="Toggle theme"
           >
@@ -60,7 +102,7 @@ export function Header() {
             </Link>
           ))}
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={toggleTheme}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-deep-twilight-200 transition-colors"
             aria-label="Toggle theme"
           >
