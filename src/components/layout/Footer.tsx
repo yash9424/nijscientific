@@ -47,21 +47,32 @@ export function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-sm text-gray-400">
                 <Mail className="h-4 w-4 shrink-0 text-sky-aqua-500" />
-                <span>nij_l@yahoo.in</span>
+                <a href="mailto:nij_l@yahoo.in" className="hover:text-sky-aqua-400 transition-colors">
+                  nij_l@yahoo.in
+                </a>
               </li>
               <li className="flex items-center gap-3 text-sm text-gray-400">
                 <Phone className="h-4 w-4 shrink-0 text-sky-aqua-500" />
-                <span>+91 94090 15580</span>
+                <a href="tel:+919409015580" className="hover:text-sky-aqua-400 transition-colors">
+                  +91 94090 15580
+                </a>
               </li>
               <li className="flex items-center gap-3 text-sm text-gray-400">
                 <Phone className="h-4 w-4 shrink-0 text-sky-aqua-500" />
-                <span>+91 98244 15753</span>
+                <a href="tel:+919824415753" className="hover:text-sky-aqua-400 transition-colors">
+                  +91 98244 15753
+                </a>
               </li>
               <li className="flex items-start gap-3 text-sm text-gray-400">
                 <MapPin className="h-4 w-4 shrink-0 mt-1 text-sky-aqua-500" />
-                <span>
+                <a 
+                  href="https://www.google.com/maps/search/?api=1&query=Nij+Scientific,+Plot+No.13,+Shed+No.5%266,+N%2FhNo.27,+B%2Fh.SkodaShowroom,+near+KisanPetrolPump,+Rajkot,+Gujarat+360022" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-sky-aqua-400 transition-colors"
+                >
                   Nij Scientific, Plot No.13, Shed No.5&6, N/hNo.27, B/h.SkodaShowroom, near KisanPetrolPump, Rajkot, Gujarat 360022
-                </span>
+                </a>
               </li>
             </ul>
           </div>
