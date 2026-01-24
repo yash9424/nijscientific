@@ -29,11 +29,11 @@ export default function ContactPage() {
   const encodedAddress = encodeURIComponent(address)
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white dark:bg-deep-twilight-100 min-h-screen">
       {/* Header Section */}
-      <section className="bg-gray-50 py-16 px-6 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+      <section className="bg-gray-50 dark:bg-deep-twilight-200 py-16 px-6 text-center">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Contact Us</h1>
+        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
           Have questions or need assistance? Reach out to our team for support with your laboratory equipment needs.
         </p>
       </section>
@@ -41,7 +41,7 @@ export default function ContactPage() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Map Section */}
-          <div className="h-[500px] bg-gray-100 rounded-xl overflow-hidden shadow-sm border border-gray-200 relative">
+          <div className="h-[500px] bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-deep-twilight-300 relative">
             <iframe
               width="100%"
               height="100%"
@@ -74,10 +74,10 @@ export default function ContactPage() {
           </div>
 
           {/* Contact Form Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <div className="bg-white dark:bg-deep-twilight-200 rounded-xl shadow-sm border border-gray-100 dark:border-deep-twilight-300 p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   <span className="flex items-center gap-2">
                     <User className="h-4 w-4" /> Your Name
                   </span>
@@ -90,12 +90,12 @@ export default function ContactPage() {
                   onChange={handleChange}
                   placeholder="Enter your name"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   <span className="flex items-center gap-2">
                     <Mail className="h-4 w-4" /> Your Email
                   </span>
@@ -108,12 +108,12 @@ export default function ContactPage() {
                   onChange={handleChange}
                   placeholder="Enter your email"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   <span className="flex items-center gap-2">
                     <Send className="h-4 w-4" /> Subject
                   </span>
@@ -126,12 +126,12 @@ export default function ContactPage() {
                   onChange={handleChange}
                   placeholder="What would you like to discuss?"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                   <span className="flex items-center gap-2">
                     <Phone className="h-4 w-4" /> Your Message
                   </span>
@@ -144,13 +144,13 @@ export default function ContactPage() {
                   placeholder="Type your message here..."
                   required
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 resize-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-french-blue-600 hover:bg-french-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-french-blue-600 hover:bg-french-blue-700 dark:bg-french-blue-500 dark:hover:bg-french-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <Send className="h-4 w-4" /> Send Message
               </button>

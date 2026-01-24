@@ -121,29 +121,29 @@ export default function ProductsPage() {
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-12">
+    <div className="bg-gray-50 dark:bg-deep-twilight-100 min-h-screen pb-12">
       {/* Header Section */}
-      <div className="bg-white pt-12 pb-8 px-4 text-center border-b">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Shop</h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+      <div className="bg-white dark:bg-deep-twilight-200 pt-12 pb-8 px-4 text-center border-b dark:border-deep-twilight-300">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Shop</h1>
+        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
           Browse our extensive collection of high-quality laboratory equipment and supplies for your research and educational needs.
         </p>
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         {/* Search and Filter Bar */}
-        <div className="bg-white p-4 rounded-lg shadow-sm mb-8">
+        <div className="bg-white dark:bg-deep-twilight-200 p-4 rounded-lg shadow-sm mb-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             {/* Search */}
             <div className="relative w-full md:w-96">
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-bright-teal-blue-500"
+                className="w-full pl-10 pr-4 py-2 border dark:border-deep-twilight-300 rounded-md focus:outline-none focus:ring-2 focus:ring-bright-teal-blue-500 bg-white dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-500" />
             </div>
             
             <button className="md:hidden w-full flex items-center justify-center gap-2 px-4 py-2 bg-french-blue-600 text-white rounded-md">
@@ -153,7 +153,7 @@ export default function ProductsPage() {
             {/* Categories */}
             <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto scrollbar-hide">
               <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-gray-500 shrink-0" />
+                <Filter className="h-5 w-5 text-gray-500 dark:text-gray-400 shrink-0" />
                 {categories.map((category) => (
                   <button
                     key={category}
@@ -162,7 +162,7 @@ export default function ProductsPage() {
                       "whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors border",
                       selectedCategory === category
                         ? "bg-french-blue-600 text-white border-french-blue-600"
-                        : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
+                        : "bg-white dark:bg-deep-twilight-300 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-deep-twilight-400 hover:bg-gray-50 dark:hover:bg-deep-twilight-400"
                     )}
                   >
                     {category}
@@ -176,8 +176,8 @@ export default function ProductsPage() {
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col group">
-              <div className="relative aspect-square bg-gray-100 overflow-hidden">
+            <div key={product.id} className="bg-white dark:bg-deep-twilight-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col group">
+              <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
                 <Image
                   src={product.image}
                   alt={product.name}
@@ -186,8 +186,8 @@ export default function ProductsPage() {
                 />
               </div>
               <div className="p-4 flex flex-col flex-grow">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{product.name}</h3>
-                <p className="text-sm text-gray-500 line-clamp-3 mb-4 flex-grow">{product.description}</p>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{product.name}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-3 mb-4 flex-grow">{product.description}</p>
                 {/* Optional: Add "View Details" or "Add to Quote" button here if needed later */}
               </div>
             </div>
@@ -197,10 +197,10 @@ export default function ProductsPage() {
         {/* No Results State */}
         {filteredProducts.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">No products found matching your criteria.</p>
             <button 
               onClick={() => { setSearchQuery(""); setSelectedCategory("All Categories"); }}
-              className="mt-4 text-french-blue-600 hover:underline"
+              className="mt-4 text-french-blue-600 dark:text-french-blue-400 hover:underline"
             >
               Clear filters
             </button>
