@@ -50,7 +50,7 @@ export function Hero() {
               
               {/* Content */}
               <div className="relative h-full flex flex-col justify-center items-start px-6 md:px-16 max-w-7xl mx-auto">
-                <span className="inline-block px-3 py-1 bg-purple-600 text-xs font-semibold rounded-full mb-4">
+                <span className="inline-block px-3 py-1 bg-turquoise-surf-600 text-white text-xs font-semibold rounded-full mb-4">
                   New Arrival
                 </span>
                 <h1 className="text-4xl md:text-6xl font-bold mb-4">

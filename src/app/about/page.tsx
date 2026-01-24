@@ -36,7 +36,7 @@ export default function AboutPage() {
             {/* Card 1 */}
             <div className="bg-white p-8 rounded-lg shadow-sm text-center hover:shadow-md transition-shadow">
               <div className="inline-flex items-center justify-center w-16 h-16 mb-6">
-                <BadgeDollarSign className="w-12 h-12 text-yellow-500" />
+                <BadgeDollarSign className="w-12 h-12 text-bright-teal-blue-500" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Value for Money</h3>
               <p className="text-gray-600 text-sm">
@@ -47,7 +47,7 @@ export default function AboutPage() {
             {/* Card 2 */}
             <div className="bg-white p-8 rounded-lg shadow-sm text-center hover:shadow-md transition-shadow">
               <div className="inline-flex items-center justify-center w-16 h-16 mb-6">
-                <Clock className="w-12 h-12 text-blue-400" />
+                <Clock className="w-12 h-12 text-bright-teal-blue-400" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">On-Time Delivery</h3>
               <p className="text-gray-600 text-sm">
@@ -58,7 +58,7 @@ export default function AboutPage() {
             {/* Card 3 */}
             <div className="bg-white p-8 rounded-lg shadow-sm text-center hover:shadow-md transition-shadow">
               <div className="inline-flex items-center justify-center w-16 h-16 mb-6">
-                <Microscope className="w-12 h-12 text-purple-500" />
+                <Microscope className="w-12 h-12 text-french-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">High-Quality Products</h3>
               <p className="text-gray-600 text-sm">
@@ -69,7 +69,7 @@ export default function AboutPage() {
             {/* Card 4 */}
             <div className="bg-white p-8 rounded-lg shadow-sm text-center hover:shadow-md transition-shadow">
               <div className="inline-flex items-center justify-center w-16 h-16 mb-6">
-                <Headset className="w-12 h-12 text-pink-500" />
+                <Headset className="w-12 h-12 text-bright-teal-blue-500" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Excellent Support</h3>
               <p className="text-gray-600 text-sm">

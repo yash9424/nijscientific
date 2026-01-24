@@ -46,7 +46,7 @@ export function ProductCategories() {
     <section className="py-16 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-sm font-semibold text-blue-600 tracking-wide uppercase">Browse Our</h2>
+          <h2 className="text-sm font-semibold text-french-blue-600 tracking-wide uppercase">Browse Our</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Product Categories</p>
         </div>
 
@@ -62,7 +62,7 @@ export function ProductCategories() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 p-6 w-full">
                 <h3 className="text-xl font-bold text-white mb-2">{category.name}</h3>
-                <div className="inline-flex items-center text-sm font-medium text-blue-300 group-hover:text-white transition-colors">
+                <div className="inline-flex items-center text-sm font-medium text-bright-teal-blue-300 group-hover:text-white transition-colors">
                   Browse Category <ArrowRight className="ml-1 h-4 w-4" />
                 </div>
               </div>

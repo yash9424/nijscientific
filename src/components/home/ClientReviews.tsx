@@ -59,7 +59,7 @@ export function ClientReviews() {
                 <div className="flex-[0_0_100%] md:flex-[0_0_50%] min-w-0 pl-4" key={review.id}>
                   <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 h-full">
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg">
+                      <div className="h-12 w-12 rounded-full bg-light-cyan-200 flex items-center justify-center text-french-blue-600 font-bold text-lg">
                         {review.avatar}
                       </div>
                       <div>
@@ -70,7 +70,7 @@ export function ClientReviews() {
                         {review.date}
                       </div>
                     </div>
-                    <div className="flex text-yellow-400 mb-4">
+                    <div className="flex text-turquoise-surf-500 mb-4">
                       {[...Array(review.rating)].map((_, i) => (
                         <Star key={i} className="h-4 w-4 fill-current" />
                       ))}

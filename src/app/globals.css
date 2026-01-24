@@ -10,6 +10,114 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Deep Twilight */
+  --color-deep-twilight: #03045e;
+  --color-deep-twilight-100: #010113;
+  --color-deep-twilight-200: #010226;
+  --color-deep-twilight-300: #020338;
+  --color-deep-twilight-400: #02044b;
+  --color-deep-twilight-500: #03045e;
+  --color-deep-twilight-600: #0508ae;
+  --color-deep-twilight-700: #0f12f8;
+  --color-deep-twilight-800: #5f61fa;
+  --color-deep-twilight-900: #afb0fd;
+
+  /* French Blue */
+  --color-french-blue: #023e8a;
+  --color-french-blue-100: #000c1b;
+  --color-french-blue-200: #011836;
+  --color-french-blue-300: #012451;
+  --color-french-blue-400: #02306d;
+  --color-french-blue-500: #023e8a;
+  --color-french-blue-600: #035cd1;
+  --color-french-blue-700: #2381fc;
+  --color-french-blue-800: #6cabfd;
+  --color-french-blue-900: #b6d5fe;
+
+  /* Bright Teal Blue */
+  --color-bright-teal-blue: #0077b6;
+  --color-bright-teal-blue-100: #001825;
+  --color-bright-teal-blue-200: #003049;
+  --color-bright-teal-blue-300: #00486e;
+  --color-bright-teal-blue-400: #005f93;
+  --color-bright-teal-blue-500: #0077b6;
+  --color-bright-teal-blue-600: #00a2f9;
+  --color-bright-teal-blue-700: #3bbaff;
+  --color-bright-teal-blue-800: #7cd1ff;
+  --color-bright-teal-blue-900: #bee8ff;
+
+  /* Blue Green */
+  --color-blue-green: #0096c7;
+  --color-blue-green-100: #001e28;
+  --color-blue-green-200: #003c50;
+  --color-blue-green-300: #005a77;
+  --color-blue-green-400: #00779f;
+  --color-blue-green-500: #0096c7;
+  --color-blue-green-600: #06c1ff;
+  --color-blue-green-700: #44d0ff;
+  --color-blue-green-800: #83e0ff;
+  --color-blue-green-900: #c1efff;
+
+  /* Turquoise Surf */
+  --color-turquoise-surf: #00b4d8;
+  --color-turquoise-surf-100: #00242b;
+  --color-turquoise-surf-200: #004756;
+  --color-turquoise-surf-300: #006b81;
+  --color-turquoise-surf-400: #008fab;
+  --color-turquoise-surf-500: #00b4d8;
+  --color-turquoise-surf-600: #12d8ff;
+  --color-turquoise-surf-700: #4ee1ff;
+  --color-turquoise-surf-800: #89ebff;
+  --color-turquoise-surf-900: #c4f5ff;
+
+  /* Sky Aqua */
+  --color-sky-aqua: #48cae4;
+  --color-sky-aqua-100: #082d34;
+  --color-sky-aqua-200: #105a69;
+  --color-sky-aqua-300: #17879d;
+  --color-sky-aqua-400: #1fb4d1;
+  --color-sky-aqua-500: #48cae4;
+  --color-sky-aqua-600: #6dd5e9;
+  --color-sky-aqua-700: #92dfef;
+  --color-sky-aqua-800: #b6eaf4;
+  --color-sky-aqua-900: #dbf4fa;
+
+  /* Frosted Blue */
+  --color-frosted-blue: #90e0ef;
+  --color-frosted-blue-100: #0a3a43;
+  --color-frosted-blue-200: #137586;
+  --color-frosted-blue-300: #1dafc9;
+  --color-frosted-blue-400: #4ccfe6;
+  --color-frosted-blue-500: #90e0ef;
+  --color-frosted-blue-600: #a6e7f2;
+  --color-frosted-blue-700: #bcedf5;
+  --color-frosted-blue-800: #d2f3f9;
+  --color-frosted-blue-900: #e9f9fc;
+
+  /* Frosted Sky (renamed from second Frosted Blue) */
+  --color-frosted-sky: #ade8f4;
+  --color-frosted-sky-100: #0a3f4a;
+  --color-frosted-sky-200: #147e93;
+  --color-frosted-sky-300: #1ebddd;
+  --color-frosted-sky-400: #65d4ea;
+  --color-frosted-sky-500: #ade8f4;
+  --color-frosted-sky-600: #beedf6;
+  --color-frosted-sky-700: #cff1f8;
+  --color-frosted-sky-800: #dff6fb;
+  --color-frosted-sky-900: #effafd;
+
+  /* Light Cyan */
+  --color-light-cyan: #caf0f8;
+  --color-light-cyan-100: #0a444f;
+  --color-light-cyan-200: #15889f;
+  --color-light-cyan-300: #2ac4e3;
+  --color-light-cyan-400: #79daee;
+  --color-light-cyan-500: #caf0f8;
+  --color-light-cyan-600: #d4f3f9;
+  --color-light-cyan-700: #dff6fb;
+  --color-light-cyan-800: #e9f9fc;
+  --color-light-cyan-900: #f4fcfe;
 }
 
 /* 

@@ -19,10 +19,10 @@ export function Header() {
     <header className="bg-white shadow-md sticky top-0 z-50">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5 text-2xl font-bold text-blue-900">
+          <Link href="/" className="-m-1.5 p-1.5 text-2xl font-bold text-deep-twilight">
             <span className="sr-only">Nij Scientific</span>
             {/* Placeholder for Logo */}
-            <span className="text-red-600">Nij</span> Scientific
+            <span className="text-french-blue">Nij</span> Scientific
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -37,7 +37,7 @@ export function Header() {
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
           {navigation.map((item) => (
-            <Link key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-900 hover:text-blue-600 transition-colors">
+            <Link key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-900 hover:text-bright-teal-blue-600 transition-colors">
               {item.name}
             </Link>
           ))}
@@ -50,7 +50,7 @@ export function Header() {
             <Link
               key={item.name}
               href={item.href}
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-light-cyan hover:text-bright-teal-blue"
               onClick={() => setMobileMenuOpen(false)}
             >
               {item.name}

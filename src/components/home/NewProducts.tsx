@@ -31,7 +31,7 @@ export function NewProducts() {
     <section className="py-16 bg-gray-50" id="products">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-sm font-semibold text-blue-600 tracking-wide uppercase">Latest Additions</h2>
+          <h2 className="text-sm font-semibold text-french-blue-600 tracking-wide uppercase">Latest Additions</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">New Products</p>
         </div>
 
@@ -46,7 +46,7 @@ export function NewProducts() {
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 {product.tag && (
-                  <span className="absolute top-4 right-4 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">
+                  <span className="absolute top-4 right-4 bg-turquoise-surf-600 text-white text-xs font-bold px-2 py-1 rounded">
                     {product.tag}
                   </span>
                 )}
@@ -54,7 +54,7 @@ export function NewProducts() {
               <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">{product.name}</h3>
                 <p className="text-gray-600 text-sm line-clamp-2 mb-4">{product.description}</p>
-                <Link href="#" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium text-sm">
+                <Link href="#" className="inline-flex items-center text-bright-teal-blue-600 hover:text-bright-teal-blue-700 font-medium text-sm">
                   View Details <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </div>

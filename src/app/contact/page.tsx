@@ -90,7 +90,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   placeholder="Enter your name"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-gray-50"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50"
                 />
               </div>
 
@@ -108,7 +108,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   placeholder="Enter your email"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-gray-50"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50"
                 />
               </div>
 
@@ -126,7 +126,7 @@ export default function ContactPage() {
                   onChange={handleChange}
                   placeholder="What would you like to discuss?"
                   required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-gray-50"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50"
                 />
               </div>
 
@@ -144,13 +144,13 @@ export default function ContactPage() {
                   placeholder="Type your message here..."
                   required
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-gray-50 resize-none"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-french-blue-600 hover:bg-french-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <Send className="h-4 w-4" /> Send Message
               </button>

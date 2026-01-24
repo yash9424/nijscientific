@@ -139,14 +139,14 @@ export default function ProductsPage() {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-bright-teal-blue-500"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
             
-            <button className="md:hidden w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md">
+            <button className="md:hidden w-full flex items-center justify-center gap-2 px-4 py-2 bg-french-blue-600 text-white rounded-md">
                <Search className="h-4 w-4" /> Search
             </button>
 
@@ -161,7 +161,7 @@ export default function ProductsPage() {
                     className={cn(
                       "whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-colors border",
                       selectedCategory === category
-                        ? "bg-purple-600 text-white border-purple-600"
+                        ? "bg-french-blue-600 text-white border-french-blue-600"
                         : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
                     )}
                   >
@@ -200,7 +200,7 @@ export default function ProductsPage() {
             <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
             <button 
               onClick={() => { setSearchQuery(""); setSelectedCategory("All Categories"); }}
-              className="mt-4 text-blue-600 hover:underline"
+              className="mt-4 text-french-blue-600 hover:underline"
             >
               Clear filters
             </button>
