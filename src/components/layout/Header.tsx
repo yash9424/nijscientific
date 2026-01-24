@@ -32,7 +32,18 @@ export function Header() {
             <span className="text-french-blue dark:text-white">Nij</span> Scientific
           </Link>
         </div>
-        <div className="flex lg:hidden">
+        <div className="flex items-center gap-4 lg:hidden">
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-deep-twilight-200 transition-colors"
+            aria-label="Toggle theme"
+          >
+            {mounted && theme === "dark" ? (
+              <Sun className="h-5 w-5 text-yellow-400" />
+            ) : (
+              <Moon className="h-5 w-5 text-deep-twilight dark:text-white" />
+            )}
+          </button>
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-200"
@@ -74,27 +85,6 @@ export function Header() {
               {item.name}
             </Link>
           ))}
-          <div className="px-3 py-2">
-            <button
-              onClick={() => {
-                setTheme(theme === "dark" ? "light" : "dark")
-                setMobileMenuOpen(false)
-              }}
-              className="flex items-center gap-2 text-base font-medium text-gray-700 dark:text-gray-200"
-            >
-              {mounted && theme === "dark" ? (
-                <>
-                  <Sun className="h-5 w-5 text-yellow-400" />
-                  <span>Light Mode</span>
-                </>
-              ) : (
-                <>
-                  <Moon className="h-5 w-5 text-deep-twilight dark:text-white" />
-                  <span>Dark Mode</span>
-                </>
-              )}
-            </button>
-          </div>
         </div>
       </div>
     </header>
