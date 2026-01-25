@@ -108,7 +108,7 @@ export function ProductCategories() {
         // 2. Neighbors smaller
         // 3. Overlap (Center on top of neighbors, neighbors on top of outer)
         
-        const scale = Math.max(0.8, 1.3 - (absSlideDiff * 0.3)) // Center 1.3, Neighbor ~1.0, Outer ~0.7
+        const scale = Math.max(0.7, 1.3 - (absSlideDiff * 0.3)) // Center 1.3, Neighbor ~1.0, Outer ~0.7
         const opacity = Math.max(0.5, 1 - (absSlideDiff * 0.2))
         const zIndex = 50 - Math.round(absSlideDiff * 10)
         
@@ -150,8 +150,8 @@ export function ProductCategories() {
         </div>
 
         <div className="relative">
-          <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex touch-pan-y -ml-4 py-10">
+          <div className="overflow-visible" ref={emblaRef}>
+            <div className="flex touch-pan-y -ml-4 py-20">
               {loopCategories.map((category, index) => {
                 const style = slideStyles[index] || { scale: 0.8, opacity: 0.5, zIndex: 0, translateX: '0%' }
                 
@@ -166,18 +166,18 @@ export function ProductCategories() {
                       transition: 'transform 0.15s ease-out, opacity 0.15s ease-out' 
                     }}
                   >
-                    <Link href={category.href} className="group relative block aspect-[3/4] overflow-hidden rounded-2xl bg-gray-900 shadow-2xl">
+                    <Link href={category.href} className="group relative block aspect-[3/4] overflow-hidden rounded-[2rem] bg-white dark:bg-gray-900 shadow-xl dark:shadow-2xl">
                       <Image
                         src={category.image}
                         alt={category.name}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/80 via-white/10 to-transparent dark:from-black/90 dark:via-black/20 dark:to-transparent opacity-90" />
                       
                       <div className="absolute bottom-0 left-0 p-6 w-full text-center transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
-                        <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{category.name}</h3>
-                        <div className="inline-flex items-center justify-center text-sm font-medium text-bright-teal-blue-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">{category.name}</h3>
+                        <div className="inline-flex items-center justify-center text-sm font-medium text-french-blue-600 dark:text-bright-teal-blue-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           View Products <ArrowRight className="ml-1 h-4 w-4" />
                         </div>
                       </div>
