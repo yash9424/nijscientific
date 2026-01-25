@@ -8,6 +8,7 @@ import {
   Package, 
   Layers, 
   Image as ImageIcon, 
+  Users,
   LogOut, 
   Menu, 
   X,
@@ -19,17 +20,23 @@ import { cn } from "@/lib/utils";
 
 const sidebarItems = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  { name: "User Management", href: "/admin/users", icon: Users },
   { name: "Categories", href: "/admin/categories", icon: Layers },
   { name: "Products", href: "/admin/products", icon: Package },
   { name: "Hero Section", href: "/admin/hero", icon: ImageIcon },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     setMounted(true);
@@ -54,7 +61,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-deep-twilight-200 border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
+          "fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-deep-twilight-200 border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -109,10 +116,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden lg:pl-64">
         {/* Top Header for Mobile */}
         <header className="lg:hidden h-16 bg-white dark:bg-deep-twilight-200 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4">
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 text-gray-600 dark:text-gray-300">
+          <button 
+            onClick={() => setSidebarOpen(!sidebarOpen)} 
+            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-deep-twilight-300 rounded-lg transition-colors"
+            aria-label="Toggle Menu"
+          >
             <Menu className="w-6 h-6" />
           </button>
           <span className="font-bold text-gray-900 dark:text-white">Admin Panel</span>

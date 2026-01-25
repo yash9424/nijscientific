@@ -1,84 +1,70 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Plus, Search, Edit, Trash, X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
-import Image from "next/image";
+import { useState, useEffect } from "react";
+import { Plus, Search, Edit, Trash, X, Loader2, User, Mail, Phone, Lock } from "lucide-react";
 
-interface Category {
+interface UserType {
   _id: string;
   name: string;
-  image: string;
-  caption: string;
+  mobile: string;
+  email: string;
   createdAt: string;
 }
 
-export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+export default function UsersPage() {
+  const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [editingUser, setEditingUser] = useState<UserType | null>(null);
   
   // Form State
   const [formData, setFormData] = useState({
     name: "",
-    caption: "",
+    mobile: "",
+    email: "",
+    password: "",
   });
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetchCategories();
+    fetchUsers();
   }, []);
 
-  const fetchCategories = async () => {
+  const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/categories");
+      const res = await fetch("/api/users");
       const data = await res.json();
       if (data.success) {
-        setCategories(data.data);
+        setUsers(data.data);
       }
     } catch (error) {
-      console.error("Failed to fetch categories:", error);
+      console.error("Failed to fetch users:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOpenModal = (category?: Category) => {
-    if (category) {
-      setEditingCategory(category);
-      setFormData({ name: category.name, caption: category.caption });
-      setImagePreview(category.image);
+  const handleOpenModal = (user?: UserType) => {
+    if (user) {
+      setEditingUser(user);
+      setFormData({ 
+        name: user.name, 
+        mobile: user.mobile, 
+        email: user.email,
+        password: "" // Don't show password on edit
+      });
     } else {
-      setEditingCategory(null);
-      setFormData({ name: "", caption: "" });
-      setImagePreview(null);
-      setSelectedImage(null);
+      setEditingUser(null);
+      setFormData({ name: "", mobile: "", email: "", password: "" });
     }
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setEditingCategory(null);
-    setFormData({ name: "", caption: "" });
-    setSelectedImage(null);
-    setImagePreview(null);
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    setEditingUser(null);
+    setFormData({ name: "", mobile: "", email: "", password: "" });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,28 +72,24 @@ export default function CategoriesPage() {
     setSubmitting(true);
 
     try {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("caption", formData.caption);
-      if (selectedImage) {
-        data.append("image", selectedImage);
-      }
-
-      const url = editingCategory 
-        ? `/api/categories/${editingCategory._id}`
-        : "/api/categories";
+      const url = editingUser 
+        ? `/api/users/${editingUser._id}`
+        : "/api/users";
       
-      const method = editingCategory ? "PUT" : "POST";
+      const method = editingUser ? "PUT" : "POST";
 
       const res = await fetch(url, {
         method,
-        body: data,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData),
       });
 
       const result = await res.json();
 
       if (result.success) {
-        fetchCategories();
+        fetchUsers();
         handleCloseModal();
       } else {
         alert(result.error || "Operation failed");
@@ -121,40 +103,41 @@ export default function CategoriesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this category?")) return;
+    if (!confirm("Are you sure you want to delete this user?")) return;
 
     try {
-      const res = await fetch(`/api/categories/${id}`, {
+      const res = await fetch(`/api/users/${id}`, {
         method: "DELETE",
       });
       const result = await res.json();
       if (result.success) {
-        setCategories(categories.filter(c => c._id !== id));
+        setUsers(users.filter(u => u._id !== id));
       } else {
         alert(result.error || "Failed to delete");
       }
     } catch (error) {
-      console.error("Error deleting category:", error);
+      console.error("Error deleting user:", error);
     }
   };
 
-  const filteredCategories = categories.filter(c => 
-    c.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(u => 
+    u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Categories</h1>
-          <p className="text-gray-500 dark:text-gray-400">Manage your product categories.</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">User Management</h1>
+          <p className="text-gray-500 dark:text-gray-400">Manage admin users and permissions.</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
           className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-french-blue hover:bg-french-blue/90 text-white rounded-xl transition-colors font-medium"
         >
           <Plus className="w-4 h-4" />
-          Add Category
+          Add User
         </button>
       </div>
 
@@ -165,7 +148,7 @@ export default function CategoriesPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Search categories..." 
+              placeholder="Search users..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border-none rounded-lg text-sm focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
@@ -178,9 +161,9 @@ export default function CategoriesPage() {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50 dark:bg-deep-twilight-300 text-gray-500 dark:text-gray-400 font-medium">
               <tr>
-                <th className="px-6 py-3">Image</th>
                 <th className="px-6 py-3">Name</th>
-                <th className="px-6 py-3">Caption</th>
+                <th className="px-6 py-3">Email</th>
+                <th className="px-6 py-3">Mobile</th>
                 <th className="px-6 py-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -189,40 +172,36 @@ export default function CategoriesPage() {
                 <tr>
                   <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
                     <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
-                    Loading categories...
+                    Loading users...
                   </td>
                 </tr>
-              ) : filteredCategories.length === 0 ? (
+              ) : filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                    No categories found.
+                    No users found.
                   </td>
                 </tr>
               ) : (
-                filteredCategories.map((cat) => (
-                  <tr key={cat._id} className="hover:bg-gray-50 dark:hover:bg-deep-twilight-300/50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 relative">
-                        <Image 
-                          src={cat.image} 
-                          alt={cat.name} 
-                          fill 
-                          className="object-cover"
-                        />
-                      </div>
+                filteredUsers.map((user) => (
+                  <tr key={user._id} className="hover:bg-gray-50 dark:hover:bg-deep-twilight-300/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-french-blue/10 dark:bg-sky-aqua/10 flex items-center justify-center text-french-blue dark:text-sky-aqua">
+                            <User className="w-4 h-4" />
+                        </div>
+                        {user.name}
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{cat.name}</td>
-                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400 truncate max-w-xs">{cat.caption}</td>
+                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{user.email}</td>
+                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{user.mobile}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button 
-                          onClick={() => handleOpenModal(cat)}
+                          onClick={() => handleOpenModal(user)}
                           className="p-2 text-gray-400 hover:text-french-blue dark:hover:text-sky-aqua transition-colors"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button 
-                          onClick={() => handleDelete(cat._id)}
+                          onClick={() => handleDelete(user._id)}
                           className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                         >
                           <Trash className="w-4 h-4" />
@@ -243,7 +222,7 @@ export default function CategoriesPage() {
           <div className="bg-white dark:bg-deep-twilight-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                {editingCategory ? "Edit Category" : "Add Category"}
+                {editingUser ? "Edit User" : "Add User"}
               </h2>
               <button 
                 onClick={handleCloseModal}
@@ -256,52 +235,64 @@ export default function CategoriesPage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-                <input 
-                  type="text" 
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
-                  placeholder="e.g. Glassware"
-                  required
-                />
+                <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input 
+                    type="text" 
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
+                    placeholder="Full Name"
+                    required
+                    />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Caption</label>
-                <input 
-                  type="text" 
-                  value={formData.caption}
-                  onChange={(e) => setFormData({...formData, caption: e.target.value})}
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
-                  placeholder="e.g. High quality beakers and flasks"
-                  required
-                />
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Mobile</label>
+                <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input 
+                    type="tel" 
+                    value={formData.mobile}
+                    onChange={(e) => setFormData({...formData, mobile: e.target.value})}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
+                    placeholder="Mobile Number"
+                    required
+                    />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Image</label>
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center cursor-pointer hover:border-french-blue dark:hover:border-sky-aqua transition-colors bg-gray-50 dark:bg-deep-twilight-300"
-                >
-                  {imagePreview ? (
-                    <div className="relative w-full h-48 rounded-lg overflow-hidden">
-                      <Image src={imagePreview} alt="Preview" fill className="object-cover" />
-                    </div>
-                  ) : (
-                    <div className="py-8">
-                      <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Click to upload image</p>
-                    </div>
-                  )}
-                  <input 
-                    type="file" 
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    required={!editingCategory}
-                  />
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input 
+                    type="email" 
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
+                    placeholder="Email Address"
+                    required
+                    />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {editingUser ? "Password (Leave blank to keep current)" : "Password"}
+                </label>
+                <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input 
+                    type="password" 
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
+                    placeholder="Password"
+                    required={!editingUser}
+                    minLength={6}
+                    />
                 </div>
               </div>
 
@@ -319,7 +310,7 @@ export default function CategoriesPage() {
                   className="px-4 py-2 bg-french-blue hover:bg-french-blue/90 text-white rounded-lg font-medium transition-colors disabled:opacity-70 flex items-center gap-2"
                 >
                   {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {editingCategory ? "Update" : "Create"}
+                  {editingUser ? "Update" : "Create"}
                 </button>
               </div>
             </form>

@@ -6,6 +6,8 @@ import { FooterWrapper } from "@/components/layout/FooterWrapper";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Preloader } from "@/components/layout/Preloader";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { InquiryProvider } from "@/context/InquiryContext";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,14 +39,17 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
         >
-          <Preloader />
-          <Header />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <FooterWrapper />
-          
-          <WhatsAppButton />
+          <InquiryProvider>
+            <Preloader />
+            <Header />
+            <main className="flex-grow">
+              {children}
+            </main>
+            <FooterWrapper />
+            
+            <WhatsAppButton />
+            <Toaster position="top-center" richColors />
+          </InquiryProvider>
         </ThemeProvider>
       </body>
     </html>

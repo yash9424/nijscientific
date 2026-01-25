@@ -3,65 +3,68 @@
 import { useCallback, useEffect, useState, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Loader2 } from "lucide-react"
 import useEmblaCarousel from "embla-carousel-react"
 import Autoplay from "embla-carousel-autoplay"
 import { cn } from "@/lib/utils"
 import { EmblaCarouselType, EmblaEventType } from "embla-carousel"
 
-const categories = [
-  {
-    id: 1,
-    name: "Glassware",
-    image: "https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&q=80&w=600",
-    href: "#",
-  },
-  {
-    id: 2,
-    name: "All Products",
-    image: "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&q=80&w=600",
-    href: "#",
-  },
-  {
-    id: 3,
-    name: "Lab Equipment",
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600",
-    href: "#",
-  },
-  {
-    id: 4,
-    name: "Scientific Devices",
-    image: "https://images.unsplash.com/photo-1564325724739-bae0bd08762c?auto=format&fit=crop&q=80&w=600",
-    href: "#",
-  },
-  {
-    id: 5,
-    name: "Plasticware",
-    image: "https://images.unsplash.com/photo-1615486511484-92e1c31863db?auto=format&fit=crop&q=80&w=600",
-    href: "#",
-  },
-  {
-    id: 6,
-    name: "Chemicals",
-    image: "https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6?auto=format&fit=crop&q=80&w=600",
-    href: "#",
-  }
-]
-
-// Duplicate categories for smoother infinite loop with plenty of items
-const loopCategories = [
-  ...categories, 
-  ...categories.map(c => ({ ...c, id: c.id + 100 })),
-  ...categories.map(c => ({ ...c, id: c.id + 200 })),
-  ...categories.map(c => ({ ...c, id: c.id + 300 }))
-]
+interface Category {
+  _id: string;
+  name: string;
+  image: string;
+  caption: string;
+  createdAt: string;
+}
 
 export function ProductCategories() {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loopCategories, setLoopCategories] = useState<Category[]>([])
+
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, align: "center", containScroll: false, startIndex: categories.length },
+    { loop: true, align: "center", containScroll: false, startIndex: categories.length > 0 ? categories.length : 0 },
     [Autoplay({ delay: 3000, stopOnInteraction: false })]
   )
   const [slideStyles, setSlideStyles] = useState<{ scale: number; opacity: number; zIndex: number; translateX: string }[]>([])
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      // Duplicate categories for smoother infinite loop with plenty of items
+      const loop = [
+        ...categories, 
+        ...categories.map(c => ({ ...c, _id: c._id + "_dup1" })),
+        ...categories.map(c => ({ ...c, _id: c._id + "_dup2" })),
+        ...categories.map(c => ({ ...c, _id: c._id + "_dup3" }))
+      ];
+      setLoopCategories(loop);
+      
+      if (emblaApi) {
+        emblaApi.reInit({ startIndex: categories.length });
+      }
+    }
+  }, [categories, emblaApi]);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      if (data.success && data.data.length > 0) {
+        setCategories(data.data);
+      } else {
+        // Fallback to empty or specific message, but for now we rely on API
+        console.log("No categories found or API error");
+      }
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onScroll = useCallback((emblaApi: EmblaCarouselType) => {
     const engine = emblaApi.internalEngine()
@@ -141,6 +144,20 @@ export function ProductCategories() {
     }
   }, [emblaApi, onScroll])
 
+  if (loading) {
+    return (
+      <section className="py-16 bg-white dark:bg-deep-twilight-100 flex justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-french-blue" />
+      </section>
+    );
+  }
+
+  if (categories.length === 0) {
+     // If no categories, you might want to hide the section or show a placeholder.
+     // For now, hiding it to avoid broken UI.
+     return null;
+  }
+
   return (
     <section className="py-16 bg-white dark:bg-deep-twilight-100 overflow-hidden">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
@@ -157,7 +174,7 @@ export function ProductCategories() {
                 
                 return (
                   <div 
-                    key={category.id} 
+                    key={category._id} 
                     className="flex-[0_0_75%] sm:flex-[0_0_50%] md:flex-[0_0_30%] lg:flex-[0_0_20%] min-w-0 pl-4 relative"
                     style={{
                       transform: `translateX(${style.translateX}) scale(${style.scale})`,
@@ -166,7 +183,7 @@ export function ProductCategories() {
                       transition: 'transform 0.15s ease-out, opacity 0.15s ease-out' 
                     }}
                   >
-                    <Link href={category.href} className="group relative block aspect-[3/4] overflow-hidden rounded-[2rem] bg-white dark:bg-gray-900 shadow-xl dark:shadow-2xl">
+                    <Link href="#" className="group relative block aspect-[3/4] overflow-hidden rounded-[2rem] bg-white dark:bg-gray-900 shadow-xl dark:shadow-2xl">
                       <Image
                         src={category.image}
                         alt={category.name}
@@ -177,6 +194,11 @@ export function ProductCategories() {
                       
                       <div className="absolute bottom-0 left-0 p-6 w-full text-center transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
                         <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">{category.name}</h3>
+                        {category.caption && (
+                             <p className="text-sm text-gray-700 dark:text-gray-300 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
+                               {category.caption}
+                             </p>
+                        )}
                         <div className="inline-flex items-center justify-center text-sm font-medium text-french-blue-600 dark:text-bright-teal-blue-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           View Products <ArrowRight className="ml-1 h-4 w-4" />
                         </div>
@@ -188,7 +210,6 @@ export function ProductCategories() {
             </div>
           </div>
           
-          {/* Manual Controls - Overlay or below? Below is cleaner for this style */}
           <div className="flex justify-center gap-4 mt-8">
             <button 
               className="p-3 rounded-full bg-gray-100 dark:bg-deep-twilight-200 text-gray-800 dark:text-white hover:bg-bright-teal-blue hover:text-white transition-colors"

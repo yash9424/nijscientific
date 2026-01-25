@@ -90,7 +90,7 @@ export default function AboutPage() {
             <div className="bg-white dark:bg-deep-twilight-200 p-6 rounded-lg shadow-sm text-center w-full max-w-sm border border-gray-100 dark:border-deep-twilight-300">
               <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                 <Image
-                  src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=256" // Placeholder professional
+                  src="https://placehold.co/256x256/png?text=Hemant" // Placeholder professional
                   alt="Hemant Limbani"
                   fill
                   className="object-cover"
@@ -115,7 +115,7 @@ export default function AboutPage() {
             <div className="bg-white dark:bg-deep-twilight-200 p-6 rounded-lg shadow-sm text-center w-full max-w-sm border border-gray-100 dark:border-deep-twilight-300">
               <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                 <Image
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=256" // Placeholder professional
+                  src="https://placehold.co/256x256/png?text=Nij" // Placeholder professional
                   alt="Nij Limbani"
                   fill
                   className="object-cover"

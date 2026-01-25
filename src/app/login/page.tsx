@@ -20,22 +20,32 @@ export default function LoginPage() {
     setMounted(true);
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    // Simulate network delay for animation
-    setTimeout(() => {
-      if (username === "admin" && password === "admin123") {
-        // Set cookie (valid for 1 day)
-        document.cookie = "admin_session=true; path=/; max-age=86400";
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
         router.push("/admin/dashboard");
       } else {
-        setError("Invalid credentials");
+        setError(data.error || "Invalid credentials");
         setLoading(false);
       }
-    }, 1000);
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
+    }
   };
 
   const toggleTheme = () => {
@@ -74,7 +84,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Username</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 ml-1">Email / Username</label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <User className="h-5 w-5 text-gray-400 group-focus-within:text-french-blue dark:group-focus-within:text-sky-aqua transition-colors" />
@@ -84,7 +94,7 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="block w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-deep-twilight-300 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua focus:border-transparent outline-none transition-all dark:text-white"
-                placeholder="Enter admin username"
+                placeholder="Enter email or username"
                 required
               />
             </div>

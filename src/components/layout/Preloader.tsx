@@ -52,9 +52,9 @@ export function Preloader() {
                  key={`b1-${i}`}
                  className="absolute w-2 h-2 rounded-full bg-bright-teal-blue/60 dark:bg-frosted-blue/60 animate-bubble-rise"
                  style={{
-                   left: `${40 + (Math.random() * 20 - 10)}%`,
-                   animationDelay: `${Math.random() * 2}s`,
-                   animationDuration: `${1.5 + Math.random()}s`
+                   left: `${40 + ((i * 3 + 7) % 20 - 10)}%`,
+                   animationDelay: `${(i * 0.3) % 2}s`,
+                   animationDuration: `${1.5 + ((i * 0.2) % 1)}s`
                  }}
                />
              ))}
@@ -70,9 +70,9 @@ export function Preloader() {
                  key={`b2-${i}`}
                  className="absolute w-2 h-2 rounded-full bg-french-blue/60 dark:bg-sky-aqua/60 animate-bubble-rise"
                  style={{
-                   left: `${40 + (Math.random() * 20 - 10)}%`,
-                   animationDelay: `${Math.random() * 2}s`,
-                   animationDuration: `${1.5 + Math.random()}s`
+                   left: `${40 + ((i * 4 + 2) % 20 - 10)}%`,
+                   animationDelay: `${(i * 0.4) % 2}s`,
+                   animationDuration: `${1.5 + ((i * 0.3) % 1)}s`
                  }}
                />
              ))}

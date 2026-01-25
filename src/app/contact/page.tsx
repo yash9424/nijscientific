@@ -1,9 +1,12 @@
 "use client"
 
-import { Mail, MapPin, Phone, Send, User } from "lucide-react"
+import { Mail, MapPin, Phone, Send, User, MinusCircle } from "lucide-react"
 import { useState } from "react"
+import { useInquiry } from "@/context/InquiryContext"
+import Image from "next/image"
 
 export default function ContactPage() {
+  const { inquiryItems, removeFromInquiry } = useInquiry()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -73,88 +76,126 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Contact Form Section */}
-          <div className="bg-white dark:bg-deep-twilight-200 rounded-xl shadow-sm border border-gray-100 dark:border-deep-twilight-300 p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  <span className="flex items-center gap-2">
-                    <User className="h-4 w-4" /> Your Name
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your name"
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
+          <div className="space-y-8">
+            {/* Contact Form Section */}
+            <div className="bg-white dark:bg-deep-twilight-200 rounded-xl shadow-sm border border-gray-100 dark:border-deep-twilight-300 p-8">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <span className="flex items-center gap-2">
+                      <User className="h-4 w-4" /> Your Name
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter your name"
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  <span className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" /> Your Email
-                  </span>
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <span className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" /> Your Email
+                    </span>
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email"
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  <span className="flex items-center gap-2">
-                    <Send className="h-4 w-4" /> Subject
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  placeholder="What would you like to discuss?"
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <span className="flex items-center gap-2">
+                      <Send className="h-4 w-4" /> Subject
+                    </span>
+                  </label>
+                  <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    placeholder="What would you like to discuss?"
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  <span className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" /> Your Message
-                  </span>
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Type your message here..."
-                  required
-                  rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
-                />
-              </div>
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <span className="flex items-center gap-2">
+                      <Phone className="h-4 w-4" /> Your Message
+                    </span>
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    placeholder="Type your message here..."
+                    required
+                    rows={4}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-deep-twilight-300 focus:border-bright-teal-blue-500 focus:ring-2 focus:ring-bright-teal-blue-200 outline-none transition-all bg-gray-50 dark:bg-deep-twilight-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                  />
+                </div>
 
-              <button
-                type="submit"
-                className="w-full bg-french-blue-600 hover:bg-french-blue-700 dark:bg-french-blue-500 dark:hover:bg-french-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
-              >
-                <Send className="h-4 w-4" /> Send Message
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  className="w-full bg-french-blue-600 hover:bg-french-blue-700 dark:bg-french-blue-500 dark:hover:bg-french-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <Send className="h-4 w-4" /> Send Message
+                </button>
+              </form>
+            </div>
+
+            {/* Inquiry List Section */}
+            {inquiryItems.length > 0 && (
+              <div className="bg-white dark:bg-deep-twilight-200 rounded-xl shadow-sm border border-gray-100 dark:border-deep-twilight-300 p-8">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                  Inquiry Items
+                  <span className="text-sm font-normal text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+                    {inquiryItems.length}
+                  </span>
+                </h3>
+                <div className="space-y-4">
+                  {inquiryItems.map((item) => (
+                    <div key={item._id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-deep-twilight-300 rounded-lg group">
+                      <div className="flex items-center gap-4">
+                        <div className="relative w-16 h-16 rounded-md overflow-hidden bg-white border border-gray-200 dark:border-gray-700">
+                          <Image
+                            src={item.mainImage}
+                            alt={item.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <span className="font-medium text-gray-900 dark:text-white">{item.name}</span>
+                      </div>
+                      <button
+                        onClick={() => removeFromInquiry(item._id)}
+                        className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full"
+                        title="Remove from inquiry"
+                      >
+                        <MinusCircle className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
