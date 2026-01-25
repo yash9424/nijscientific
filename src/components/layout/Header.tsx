@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { Menu, X, Phone, Mail, MapPin, Sun, Moon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -17,10 +18,15 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  if (pathname.startsWith("/admin") || pathname === "/login") {
+    return null
+  }
 
   const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
     const newTheme = theme === "dark" ? "light" : "dark";

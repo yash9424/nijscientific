@@ -1,13 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { FlaskConical, FlaskRound } from "lucide-react";
 
 export function Preloader() {
   const [show, setShow] = useState(true);
   const [fadeOut, setFadeOut] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Skip preloader on admin/login
+    if (pathname.startsWith("/admin") || pathname === "/login") {
+      setShow(false);
+      return;
+    }
+
     // Prevent scrolling when preloader is active
     document.body.style.overflow = "hidden";
 
