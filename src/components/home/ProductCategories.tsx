@@ -58,7 +58,7 @@ const loopCategories = [
 
 export function ProductCategories() {
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, align: "center", containScroll: false },
+    { loop: true, align: "center", containScroll: false, startIndex: categories.length },
     [Autoplay({ delay: 3000, stopOnInteraction: false })]
   )
   const [slideStyles, setSlideStyles] = useState<{ scale: number; opacity: number; zIndex: number; translateX: string }[]>([])
@@ -158,7 +158,7 @@ export function ProductCategories() {
                 return (
                   <div 
                     key={category.id} 
-                    className="flex-[0_0_80%] md:flex-[0_0_40%] lg:flex-[0_0_20%] min-w-0 pl-4 relative"
+                    className="flex-[0_0_75%] sm:flex-[0_0_50%] md:flex-[0_0_30%] lg:flex-[0_0_20%] min-w-0 pl-4 relative"
                     style={{
                       transform: `translateX(${style.translateX}) scale(${style.scale})`,
                       opacity: style.opacity,
