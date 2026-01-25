@@ -46,3 +46,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    await dbConnect();
+    const { ids } = await request.json();
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ success: false, error: 'No IDs provided' }, { status: 400 });
+    }
+
+    // Delete from DB
+    await User.deleteMany({ _id: { $in: ids } });
+
+    return NextResponse.json({ success: true, message: 'Users deleted successfully' });
+  } catch (error) {
+    console.error('Error in DELETE /api/users:', error);
+    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
+  }
+}

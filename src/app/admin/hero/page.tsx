@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Plus, Search, Edit, Trash, X, Upload, Loader2, Image as ImageIcon, Video } from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface Hero {
   _id: string;
@@ -37,6 +38,9 @@ export default function HeroPage() {
   
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Bulk Selection State
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchHeroes();
@@ -123,22 +127,28 @@ export default function HeroPage() {
       
       const method = editingHero ? "PUT" : "POST";
 
-      const res = await fetch(url, {
+      const promise = fetch(url, {
         method,
         body: data,
+      }).then(async (res) => {
+        const result = await res.json();
+        if (!result.success) throw new Error(result.error || "Something went wrong");
+        return result;
       });
 
-      const result = await res.json();
+      toast.promise(promise, {
+        loading: editingHero ? 'Updating slide...' : 'Creating slide...',
+        success: () => {
+          fetchHeroes();
+          handleCloseModal();
+          return editingHero ? 'Slide updated successfully' : 'Slide created successfully';
+        },
+        error: (err) => err.message || 'An error occurred',
+      });
 
-      if (result.success) {
-        fetchHeroes();
-        handleCloseModal();
-      } else {
-        alert(result.error || "Something went wrong");
-      }
+      await promise;
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("An error occurred");
     } finally {
       setSubmitting(false);
     }
@@ -147,25 +157,68 @@ export default function HeroPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this slide?")) return;
 
-    try {
-      const res = await fetch(`/api/hero/${id}`, {
-        method: "DELETE",
-      });
+    const promise = fetch(`/api/hero/${id}`, {
+      method: "DELETE",
+    }).then(async (res) => {
       const data = await res.json();
-      if (data.success) {
+      if (!data.success) throw new Error(data.error || "Failed to delete slide");
+      return data;
+    });
+
+    toast.promise(promise, {
+      loading: 'Deleting slide...',
+      success: () => {
         fetchHeroes();
-      } else {
-        alert(data.error || "Failed to delete slide");
-      }
-    } catch (error) {
-      console.error("Error deleting slide:", error);
-    }
+        return 'Slide deleted successfully';
+      },
+      error: (err) => err.message || 'Failed to delete slide',
+    });
   };
 
   const filteredHeroes = heroes.filter(hero => 
     hero.headline.toLowerCase().includes(searchTerm.toLowerCase()) ||
     hero.tag.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(filteredHeroes.map(h => h._id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedIds(prev => [...prev, id]);
+    } else {
+      setSelectedIds(prev => prev.filter(i => i !== id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedIds.length} slides?`)) return;
+
+    const promise = fetch('/api/hero', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: selectedIds }),
+    }).then(async (res) => {
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error || 'Failed to delete slides');
+      return result;
+    });
+
+    toast.promise(promise, {
+      loading: 'Deleting slides...',
+      success: () => {
+        fetchHeroes();
+        setSelectedIds([]);
+        return 'Slides deleted successfully';
+      },
+      error: (err) => err.message || 'Failed to delete slides',
+    });
+  };
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
@@ -186,6 +239,15 @@ export default function HeroPage() {
 
       {/* Search and Filter */}
       <div className="flex items-center gap-4 bg-white dark:bg-deep-twilight-200 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="flex items-center gap-3 px-2 border-r border-gray-100 dark:border-gray-700 pr-4">
+            <input 
+                type="checkbox"
+                checked={filteredHeroes.length > 0 && selectedIds.length === filteredHeroes.length}
+                onChange={(e) => handleSelectAll(e.target.checked)}
+                className="w-5 h-5 rounded border-gray-300 text-french-blue focus:ring-french-blue"
+            />
+            <span className="text-sm text-gray-500 dark:text-gray-400">All</span>
+        </div>
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input 
@@ -196,6 +258,15 @@ export default function HeroPage() {
             className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border-none rounded-lg focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
           />
         </div>
+        {selectedIds.length > 0 && (
+            <button 
+                onClick={handleBulkDelete}
+                className="ml-auto flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm"
+            >
+                <Trash className="w-4 h-4" />
+                <span>Delete Selected ({selectedIds.length})</span>
+            </button>
+        )}
       </div>
 
       {/* Slides Grid */}
@@ -206,9 +277,17 @@ export default function HeroPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredHeroes.map((hero) => (
-            <div key={hero._id} className="bg-white dark:bg-deep-twilight-200 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden group hover:shadow-md transition-all">
+            <div key={hero._id} className={`bg-white dark:bg-deep-twilight-200 rounded-xl shadow-sm border overflow-hidden group hover:shadow-md transition-all ${selectedIds.includes(hero._id) ? 'border-french-blue ring-1 ring-french-blue' : 'border-gray-100 dark:border-gray-700'}`}>
               {/* Media Preview */}
               <div className="relative h-48 bg-gray-100 dark:bg-deep-twilight-300">
+                <div className="absolute top-2 left-2 z-10">
+                    <input 
+                        type="checkbox"
+                        checked={selectedIds.includes(hero._id)}
+                        onChange={(e) => handleSelectOne(hero._id, e.target.checked)}
+                        className="w-5 h-5 rounded border-gray-300 text-french-blue focus:ring-french-blue shadow-sm"
+                    />
+                </div>
                 {hero.mediaType === 'video' ? (
                   <video 
                     src={hero.mediaUrl} 

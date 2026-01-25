@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Category from '@/models/Category';
-import { uploadMedia } from '@/lib/cloudinary';
+import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
 export async function GET() {
   try {
@@ -39,6 +39,35 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data: category }, { status: 201 });
   } catch (error) {
     console.error('Error in POST /api/categories:', error);
+    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    await dbConnect();
+    const { ids } = await request.json();
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ success: false, error: 'No IDs provided' }, { status: 400 });
+    }
+
+    // Find items to get media URLs
+    const categories = await Category.find({ _id: { $in: ids } });
+
+    // Delete media for each category
+    for (const category of categories) {
+      if (category.image) {
+        await deleteMedia(category.image);
+      }
+    }
+
+    // Delete from DB
+    await Category.deleteMany({ _id: { $in: ids } });
+
+    return NextResponse.json({ success: true, message: 'Categories deleted successfully' });
+  } catch (error) {
+    console.error('Error in DELETE /api/categories:', error);
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
   }
 }

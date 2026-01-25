@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Search, Edit, Trash, X, Loader2, User, Mail, Phone, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 interface UserType {
   _id: string;
@@ -26,6 +27,9 @@ export default function UsersPage() {
     password: "",
   });
   const [submitting, setSubmitting] = useState(false);
+
+  // Bulk Selection State
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchUsers();
@@ -125,6 +129,46 @@ export default function UsersPage() {
     u.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(filteredUsers.map(u => u._id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelectedIds(prev => [...prev, id]);
+    } else {
+      setSelectedIds(prev => prev.filter(i => i !== id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedIds.length} users?`)) return;
+
+    const promise = fetch('/api/users', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: selectedIds }),
+    }).then(async (res) => {
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error || 'Failed to delete users');
+      return result;
+    });
+
+    toast.promise(promise, {
+      loading: 'Deleting users...',
+      success: () => {
+        setUsers(users.filter(u => !selectedIds.includes(u._id)));
+        setSelectedIds([]);
+        return 'Users deleted successfully';
+      },
+      error: (err) => err.message || 'Failed to delete users',
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -154,6 +198,15 @@ export default function UsersPage() {
               className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border-none rounded-lg text-sm focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
             />
           </div>
+          {selectedIds.length > 0 && (
+            <button 
+                onClick={handleBulkDelete}
+                className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-sm text-sm font-medium"
+            >
+                <Trash className="w-4 h-4" />
+                <span>Delete Selected ({selectedIds.length})</span>
+            </button>
+          )}
         </div>
 
         {/* Table */}
@@ -161,6 +214,14 @@ export default function UsersPage() {
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50 dark:bg-deep-twilight-300 text-gray-500 dark:text-gray-400 font-medium">
               <tr>
+                <th className="px-6 py-3 w-10">
+                    <input 
+                        type="checkbox"
+                        checked={filteredUsers.length > 0 && selectedIds.length === filteredUsers.length}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="w-4 h-4 rounded border-gray-300 text-french-blue focus:ring-french-blue"
+                    />
+                </th>
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Email</th>
                 <th className="px-6 py-3">Mobile</th>
@@ -184,6 +245,14 @@ export default function UsersPage() {
               ) : (
                 filteredUsers.map((user) => (
                   <tr key={user._id} className="hover:bg-gray-50 dark:hover:bg-deep-twilight-300/50 transition-colors">
+                    <td className="px-6 py-4">
+                        <input 
+                            type="checkbox"
+                            checked={selectedIds.includes(user._id)}
+                            onChange={(e) => handleSelectOne(user._id, e.target.checked)}
+                            className="w-4 h-4 rounded border-gray-300 text-french-blue focus:ring-french-blue"
+                        />
+                    </td>
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-french-blue/10 dark:bg-sky-aqua/10 flex items-center justify-center text-french-blue dark:text-sky-aqua">
                             <User className="w-4 h-4" />

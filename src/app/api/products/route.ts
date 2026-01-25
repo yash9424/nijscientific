@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Product from '@/models/Product';
 import Category from '@/models/Category'; // Import to ensure registration
-import { uploadMedia } from '@/lib/cloudinary';
+import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
 export async function GET() {
   try {
@@ -63,6 +63,43 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data: product }, { status: 201 });
   } catch (error) {
     console.error('Error in POST /api/products:', error);
+    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    await dbConnect();
+    const { ids } = await request.json();
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ success: false, error: 'No IDs provided' }, { status: 400 });
+    }
+
+    // Find items to get media URLs
+    const products = await Product.find({ _id: { $in: ids } });
+
+    // Delete media for each product
+    for (const product of products) {
+      // Delete main image
+      if (product.mainImage) {
+        await deleteMedia(product.mainImage);
+      }
+      
+      // Delete additional images
+      if (product.images && product.images.length > 0) {
+        for (const imageUrl of product.images) {
+          await deleteMedia(imageUrl);
+        }
+      }
+    }
+
+    // Delete from DB
+    await Product.deleteMany({ _id: { $in: ids } });
+
+    return NextResponse.json({ success: true, message: 'Products deleted successfully' });
+  } catch (error) {
+    console.error('Error in DELETE /api/products:', error);
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
   }
 }

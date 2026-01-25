@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Hero from '@/models/Hero';
-import { uploadMedia } from '@/lib/cloudinary';
+import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
 export async function GET() {
   try {
@@ -51,6 +51,35 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, data: hero }, { status: 201 });
   } catch (error) {
     console.error('Error in POST /api/hero:', error);
+    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    await dbConnect();
+    const { ids } = await request.json();
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json({ success: false, error: 'No IDs provided' }, { status: 400 });
+    }
+
+    // Find items to get media URLs
+    const heroes = await Hero.find({ _id: { $in: ids } });
+
+    // Delete media for each hero
+    for (const hero of heroes) {
+      if (hero.mediaUrl) {
+        await deleteMedia(hero.mediaUrl);
+      }
+    }
+
+    // Delete from DB
+    await Hero.deleteMany({ _id: { $in: ids } });
+
+    return NextResponse.json({ success: true, message: 'Hero slides deleted successfully' });
+  } catch (error) {
+    console.error('Error in DELETE /api/hero:', error);
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
   }
 }
