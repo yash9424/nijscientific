@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Product from '@/models/Product';
 import Category from '@/models/Category'; // Import to ensure registration
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import { uploadMedia } from '@/lib/cloudinary';
 
 export async function GET() {
   try {
@@ -37,26 +36,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Main image is required' }, { status: 400 });
     }
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    // Save Main Image to Cloudinary
+    const mainImageResult = await uploadMedia(mainImageFile, 'nijsci/products');
+    const mainImageUrl = mainImageResult.secure_url;
 
-    // Save Main Image
-    const mainImageBytes = await mainImageFile.arrayBuffer();
-    const mainImageBuffer = Buffer.from(mainImageBytes);
-    const mainImageFilename = `${Date.now()}-main-${mainImageFile.name.replace(/\s/g, '-')}`;
-    const mainImagePath = path.join(uploadDir, mainImageFilename);
-    await writeFile(mainImagePath, mainImageBuffer);
-    const mainImageUrl = `/uploads/${mainImageFilename}`;
-
-    // Save Additional Images
+    // Save Additional Images to Cloudinary
     const additionalImageUrls: string[] = [];
     for (const file of additionalImagesFiles) {
         if (file instanceof File) {
-            const bytes = await file.arrayBuffer();
-            const buffer = Buffer.from(bytes);
-            const filename = `${Date.now()}-extra-${file.name.replace(/\s/g, '-')}`;
-            const filepath = path.join(uploadDir, filename);
-            await writeFile(filepath, buffer);
-            additionalImageUrls.push(`/uploads/${filename}`);
+            const result = await uploadMedia(file, 'nijsci/products');
+            additionalImageUrls.push(result.secure_url);
         }
     }
 

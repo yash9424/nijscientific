@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Product from '@/models/Product';
-import { writeFile, unlink } from 'fs/promises';
-import path from 'path';
+import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
 export async function GET(
   request: NextRequest,
@@ -40,16 +39,6 @@ export async function PUT(
     const tableRows = formData.get('tableRows') ? JSON.parse(formData.get('tableRows') as string) : [];
     const mainImageFile = formData.get('mainImage') as File | null;
     const additionalImagesFiles = formData.getAll('images') as File[];
-    // We might also need to know which existing images to keep or delete.
-    // For simplicity, let's assume 'existingImages' passed as JSON string array
-    // or we just append new ones. 
-    // A better approach for "images" array update is tricky with simple formData.
-    // Let's assume the client sends "existingImages" list to keep, and we append new uploads.
-    // BUT the user prompt didn't specify complex image management (delete specific extra image).
-    // Let's implement: Replace Main Image if provided. Append new additional images.
-    // To support deleting specific extra images, we would need a separate API or a complex logic here.
-    // I will stick to "Append" for now, or "Replace All" if that's easier.
-    // Actually, "Add more image not limit" implies appending.
     
     const product = await Product.findById(id);
 
@@ -57,37 +46,22 @@ export async function PUT(
       return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
     }
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-
     // Handle Main Image Update
     if (mainImageFile && mainImageFile instanceof File) {
       // Delete old main image
-      if (product.mainImage && product.mainImage.startsWith('/uploads/')) {
-        const oldPath = path.join(process.cwd(), 'public', product.mainImage);
-        try {
-          await unlink(oldPath);
-        } catch (e) {
-          console.warn('Failed to delete old main image:', e);
-        }
+      if (product.mainImage) {
+        await deleteMedia(product.mainImage);
       }
 
-      const bytes = await mainImageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}-main-${mainImageFile.name.replace(/\s/g, '-')}`;
-      const filepath = path.join(uploadDir, filename);
-      await writeFile(filepath, buffer);
-      product.mainImage = `/uploads/${filename}`;
+      const result = await uploadMedia(mainImageFile, 'nijsci/products');
+      product.mainImage = result.secure_url;
     }
 
     // Handle Additional Images (Append)
     for (const file of additionalImagesFiles) {
         if (file instanceof File) {
-            const bytes = await file.arrayBuffer();
-            const buffer = Buffer.from(bytes);
-            const filename = `${Date.now()}-extra-${file.name.replace(/\s/g, '-')}`;
-            const filepath = path.join(uploadDir, filename);
-            await writeFile(filepath, buffer);
-            product.images.push(`/uploads/${filename}`);
+            const result = await uploadMedia(file, 'nijsci/products');
+            product.images.push(result.secure_url);
         }
     }
     
@@ -97,16 +71,9 @@ export async function PUT(
     if (deletedImages.length > 0) {
         product.images = product.images.filter((img: string) => !deletedImages.includes(img));
         
-        // Cleanup files
+        // Cleanup Cloudinary files
         for (const imgUrl of deletedImages) {
-            if (imgUrl.startsWith('/uploads/')) {
-                const oldPath = path.join(process.cwd(), 'public', imgUrl);
-                try {
-                    await unlink(oldPath);
-                } catch (e) {
-                     console.warn('Failed to delete old extra image:', e);
-                }
-            }
+            await deleteMedia(imgUrl);
         }
     }
 
@@ -141,26 +108,14 @@ export async function DELETE(
     }
 
     // Delete Main Image
-    if (product.mainImage && product.mainImage.startsWith('/uploads/')) {
-        const oldPath = path.join(process.cwd(), 'public', product.mainImage);
-        try {
-          await unlink(oldPath);
-        } catch (e) {
-          console.warn('Failed to delete main image:', e);
-        }
+    if (product.mainImage) {
+        await deleteMedia(product.mainImage);
     }
 
     // Delete Additional Images
     if (product.images && product.images.length > 0) {
         for (const imgUrl of product.images) {
-            if (imgUrl.startsWith('/uploads/')) {
-                const oldPath = path.join(process.cwd(), 'public', imgUrl);
-                try {
-                  await unlink(oldPath);
-                } catch (e) {
-                  console.warn('Failed to delete extra image:', e);
-                }
-            }
+            await deleteMedia(imgUrl);
         }
     }
 

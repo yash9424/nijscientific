@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Category from '@/models/Category';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import { uploadMedia } from '@/lib/cloudinary';
 
 export async function GET() {
   try {
@@ -27,16 +26,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No image uploaded' }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Create unique filename
-    const filename = `${Date.now()}-${file.name.replace(/\s/g, '-')}`;
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    const filepath = path.join(uploadDir, filename);
-
-    await writeFile(filepath, buffer);
-    const imageUrl = `/uploads/${filename}`;
+    // Upload to Cloudinary
+    const result = await uploadMedia(file, 'nijsci/categories');
+    const imageUrl = result.secure_url;
 
     const category = await Category.create({
       name,

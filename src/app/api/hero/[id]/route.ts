@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Hero from '@/models/Hero';
-import { writeFile, unlink } from 'fs/promises';
-import path from 'path';
+import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
 export async function PUT(
   request: NextRequest,
@@ -27,24 +26,13 @@ export async function PUT(
 
     // Handle Media Update
     if (mediaFile && mediaFile instanceof File) {
-      // Delete old media
-      if (hero.mediaUrl && hero.mediaUrl.startsWith('/uploads/')) {
-        const oldPath = path.join(process.cwd(), 'public', hero.mediaUrl);
-        try {
-          await unlink(oldPath);
-        } catch (e) {
-          console.warn('Failed to delete old hero media:', e);
-        }
+      // Delete old media from Cloudinary if applicable
+      if (hero.mediaUrl) {
+        await deleteMedia(hero.mediaUrl);
       }
 
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-      const bytes = await mediaFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}-hero-${mediaFile.name.replace(/\s/g, '-')}`;
-      const filepath = path.join(uploadDir, filename);
-      await writeFile(filepath, buffer);
-      
-      hero.mediaUrl = `/uploads/${filename}`;
+      const result = await uploadMedia(mediaFile, 'nijsci/hero');
+      hero.mediaUrl = result.secure_url;
       hero.mediaType = mediaFile.type.startsWith('video/') ? 'video' : 'image';
     }
 
@@ -76,14 +64,9 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: 'Hero slide not found' }, { status: 404 });
     }
 
-    // Delete media file
-    if (hero.mediaUrl && hero.mediaUrl.startsWith('/uploads/')) {
-      const oldPath = path.join(process.cwd(), 'public', hero.mediaUrl);
-      try {
-        await unlink(oldPath);
-      } catch (e) {
-        console.warn('Failed to delete hero media file:', e);
-      }
+    // Delete media file from Cloudinary
+    if (hero.mediaUrl) {
+      await deleteMedia(hero.mediaUrl);
     }
 
     await Hero.findByIdAndDelete(id);

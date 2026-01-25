@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Category from '@/models/Category';
-import { writeFile, unlink } from 'fs/promises';
-import path from 'path';
+import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
 export async function PUT(
   request: NextRequest,
@@ -26,24 +25,13 @@ export async function PUT(
     let imageUrl = category.image;
 
     if (file && file instanceof File) {
-      // Delete old image if exists and it's a local file
-      if (category.image && category.image.startsWith('/uploads/')) {
-        const oldPath = path.join(process.cwd(), 'public', category.image);
-        try {
-          await unlink(oldPath);
-        } catch (e) {
-          console.warn('Failed to delete old image:', e);
-        }
+      // Delete old image if exists
+      if (category.image) {
+        await deleteMedia(category.image);
       }
 
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const filename = `${Date.now()}-${file.name.replace(/\s/g, '-')}`;
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-      const filepath = path.join(uploadDir, filename);
-
-      await writeFile(filepath, buffer);
-      imageUrl = `/uploads/${filename}`;
+      const result = await uploadMedia(file, 'nijsci/categories');
+      imageUrl = result.secure_url;
     }
 
     category.name = name || category.name;
@@ -73,13 +61,8 @@ export async function DELETE(
     }
 
     // Delete image file
-    if (category.image && category.image.startsWith('/uploads/')) {
-        const oldPath = path.join(process.cwd(), 'public', category.image);
-        try {
-          await unlink(oldPath);
-        } catch (e) {
-          console.warn('Failed to delete image:', e);
-        }
+    if (category.image) {
+        await deleteMedia(category.image);
     }
 
     await Category.deleteOne({ _id: id });

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Hero from '@/models/Hero';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import { uploadMedia } from '@/lib/cloudinary';
 
 export async function GET() {
   try {
@@ -36,15 +35,9 @@ export async function POST(request: NextRequest) {
     // Determine media type
     const mediaType = mediaFile.type.startsWith('video/') ? 'video' : 'image';
 
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-
-    // Save Media File
-    const bytes = await mediaFile.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const filename = `${Date.now()}-hero-${mediaFile.name.replace(/\s/g, '-')}`;
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-    const mediaUrl = `/uploads/${filename}`;
+    // Save Media File to Cloudinary
+    const result = await uploadMedia(mediaFile, 'nijsci/hero');
+    const mediaUrl = result.secure_url;
 
     const hero = await Hero.create({
       tag,
