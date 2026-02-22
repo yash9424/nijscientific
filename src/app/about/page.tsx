@@ -13,7 +13,7 @@ export default function AboutPage() {
 
         <div className="text-gray-600 dark:text-gray-300 space-y-8 text-left max-w-6xl mx-auto">
           <p className="leading-relaxed">
-            Since 1998, <span className="font-bold text-gray-900 dark:text-white">NIJ SCIENTIFIC</span> has been a leading national source of laboratory and scientific products, instruments, equipment, and supplies. We specialize in providing equipment for school and college laboratories, covering physics, biology, chemistry, and mathematics. In this endeavour, with increasing Indian economy & education industry, we have expanded our product range to various fields, including Engineering, Medical, Pharmacy, Homeopathy, Nursing, Dental, and Polytechnic Colleges.
+            Since 2018, <span className="font-bold text-gray-900 dark:text-white">NIJ SCIENTIFIC</span> has been a leading national source of laboratory and scientific products, instruments, equipment, and supplies. We specialize in providing equipment for school and college laboratories, covering physics, biology, chemistry, and mathematics. In this endeavour, with increasing Indian economy & education industry, we have expanded our product range to various fields, including Engineering, Medical, Pharmacy, Homeopathy, Nursing, Dental, and Polytechnic Colleges.
           </p>
           
           <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
@@ -85,12 +85,11 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">Our Directors</h2>
           
-          <div className="grid md:grid-cols-3 gap-8 justify-items-center">
-            {/* Director 1 */}
+          <div className="grid md:grid-cols-2 gap-8 justify-items-center">
             <div className="bg-white dark:bg-deep-twilight-200 p-6 rounded-lg shadow-sm text-center w-full max-w-sm border border-gray-100 dark:border-deep-twilight-300">
               <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
                 <Image
-                  src="https://placehold.co/256x256/png?text=Hemant" // Placeholder professional
+                  src="https://placehold.co/256x256/png?text=Hemant"
                   alt="Hemant Limbani"
                   fill
                   className="object-cover"
@@ -100,7 +99,6 @@ export default function AboutPage() {
               <p className="text-sm text-gray-500 dark:text-gray-400">Managing Director</p>
             </div>
 
-            {/* Director 2 */}
             <div className="bg-white dark:bg-deep-twilight-200 p-6 rounded-lg shadow-sm text-center w-full max-w-sm border border-gray-100 dark:border-deep-twilight-300">
               <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                 <svg className="w-20 h-20 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
@@ -108,20 +106,6 @@ export default function AboutPage() {
                 </svg>
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">Yash Limbani</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Managing Director</p>
-            </div>
-
-            {/* Director 3 */}
-            <div className="bg-white dark:bg-deep-twilight-200 p-6 rounded-lg shadow-sm text-center w-full max-w-sm border border-gray-100 dark:border-deep-twilight-300">
-              <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-                <Image
-                  src="https://placehold.co/256x256/png?text=Nij" // Placeholder professional
-                  alt="Nij Limbani"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Nij Limbani</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">Managing Director</p>
             </div>
           </div>

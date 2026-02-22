@@ -8,6 +8,15 @@ import Link from "next/link"
 import { useInquiry } from "@/context/InquiryContext"
 import { toast } from "sonner"
 
+interface Review {
+  _id: string;
+  product: string;
+  name: string;
+  rating: number;
+  content: string;
+  createdAt: string;
+}
+
 interface Product {
   _id: string;
   name: string;
@@ -26,10 +35,19 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState<string>("")
   const { addToInquiry, removeFromInquiry, isInInquiry } = useInquiry()
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [reviewsLoading, setReviewsLoading] = useState(false)
+  const [reviewForm, setReviewForm] = useState({
+    name: "",
+    rating: 5,
+    content: "",
+  })
+  const [submittingReview, setSubmittingReview] = useState(false)
 
   useEffect(() => {
     if (params.id) {
       fetchProduct(params.id as string)
+      fetchReviews(params.id as string)
     }
   }, [params.id])
 
@@ -46,6 +64,66 @@ export default function ProductDetailPage() {
       console.error("Error fetching product:", error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchReviews = async (id: string) => {
+    try {
+      setReviewsLoading(true)
+      const res = await fetch(`/api/reviews?productId=${id}`)
+      const data = await res.json()
+      if (data.success) {
+        setReviews(data.data)
+      }
+    } catch (error) {
+      console.error("Error fetching reviews:", error)
+    } finally {
+      setReviewsLoading(false)
+    }
+  }
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!product) return
+
+    if (!reviewForm.name.trim() || !reviewForm.content.trim()) {
+      toast.error("Please fill all fields")
+      return
+    }
+
+    try {
+      setSubmittingReview(true)
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: product._id,
+          name: reviewForm.name.trim(),
+          rating: reviewForm.rating,
+          content: reviewForm.content.trim(),
+        }),
+      })
+
+      const data = await res.json()
+      if (!data.success) {
+        toast.error(data.error || "Failed to submit review")
+        return
+      }
+
+      toast.success("Review submitted")
+      setReviewForm({
+        name: "",
+        rating: 5,
+        content: "",
+      })
+      fetchReviews(product._id)
+    } catch (error) {
+      console.error("Error submitting review:", error)
+      toast.error("Failed to submit review")
+    } finally {
+      setSubmittingReview(false)
     }
   }
 
@@ -86,7 +164,7 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Left Column: Images */}
           <div className="space-y-4">
@@ -225,6 +303,126 @@ export default function ProductDetailPage() {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 lg:gap-12">
+          <div className="bg-white dark:bg-deep-twilight-200 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Write a review
+            </h2>
+            <form className="space-y-4" onSubmit={handleSubmitReview}>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Your name
+                </label>
+                <input
+                  type="text"
+                  value={reviewForm.name}
+                  onChange={(e) =>
+                    setReviewForm({ ...reviewForm, name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-deep-twilight-300 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua"
+                  placeholder="Enter your name"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Rating
+                </label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() =>
+                        setReviewForm({ ...reviewForm, rating: star })
+                      }
+                      className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm ${
+                        reviewForm.rating >= star
+                          ? "bg-french-blue text-white border-french-blue"
+                          : "bg-white dark:bg-deep-twilight-300 text-gray-500 dark:text-gray-300 border-gray-200 dark:border-gray-600"
+                      }`}
+                    >
+                      {star}
+                    </button>
+                  ))}
+                  <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                    {reviewForm.rating} of 5
+                  </span>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Review
+                </label>
+                <textarea
+                  value={reviewForm.content}
+                  onChange={(e) =>
+                    setReviewForm({ ...reviewForm, content: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-deep-twilight-300 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua min-h-[100px]"
+                  placeholder="Share your experience with this product"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={submittingReview}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-french-blue hover:bg-french-blue/90 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-70"
+              >
+                {submittingReview && (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                )}
+                Submit review
+              </button>
+            </form>
+          </div>
+
+          <div className="bg-white dark:bg-deep-twilight-200 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Reviews
+              </h2>
+            </div>
+            {reviewsLoading ? (
+              <div className="flex items-center justify-center py-8 text-gray-500 dark:text-gray-400">
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                Loading reviews...
+              </div>
+            ) : reviews.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                No reviews yet. Be the first to review this product.
+              </p>
+            ) : (
+              <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
+                {reviews.map((review) => (
+                  <div
+                    key={review._id}
+                    className="border border-gray-100 dark:border-gray-700 rounded-xl p-4"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="font-medium text-sm text-gray-900 dark:text-white">
+                        {review.name}
+                      </p>
+                      <span className="text-xs text-french-blue dark:text-sky-aqua font-semibold">
+                        {review.rating} / 5
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+                      {new Date(review.createdAt).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      {review.content}
+                    </p>
+                  </div>
+                ))}
               </div>
             )}
           </div>

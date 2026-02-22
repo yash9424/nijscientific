@@ -13,7 +13,8 @@ import {
   Menu, 
   X,
   Sun,
-  Moon
+  Moon,
+  Star
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,7 @@ const sidebarItems = [
   { name: "Categories", href: "/admin/categories", icon: Layers },
   { name: "Products", href: "/admin/products", icon: Package },
   { name: "Hero Section", href: "/admin/hero", icon: ImageIcon },
+  { name: "Reviews", href: "/admin/reviews", icon: Star },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

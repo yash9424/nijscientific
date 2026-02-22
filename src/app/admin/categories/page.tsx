@@ -10,7 +10,9 @@ interface Category {
   name: string;
   image: string;
   caption: string;
+  isActive: boolean;
   createdAt: string;
+  order?: number;
 }
 
 export default function CategoriesPage() {
@@ -24,6 +26,8 @@ export default function CategoriesPage() {
   const [formData, setFormData] = useState({
     name: "",
     caption: "",
+    isActive: true,
+    order: 0,
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -54,11 +58,16 @@ export default function CategoriesPage() {
   const handleOpenModal = (category?: Category) => {
     if (category) {
       setEditingCategory(category);
-      setFormData({ name: category.name, caption: category.caption });
+      setFormData({ 
+        name: category.name, 
+        caption: category.caption,
+        isActive: category.isActive,
+        order: category.order ?? 0,
+      });
       setImagePreview(category.image);
     } else {
       setEditingCategory(null);
-      setFormData({ name: "", caption: "" });
+      setFormData({ name: "", caption: "", isActive: true, order: 0 });
       setImagePreview(null);
       setSelectedImage(null);
     }
@@ -68,7 +77,7 @@ export default function CategoriesPage() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingCategory(null);
-    setFormData({ name: "", caption: "" });
+    setFormData({ name: "", caption: "", isActive: true, order: 0 });
     setSelectedImage(null);
     setImagePreview(null);
   };
@@ -93,6 +102,7 @@ export default function CategoriesPage() {
       const data = new FormData();
       data.append("name", formData.name);
       data.append("caption", formData.caption);
+      data.append("isActive", String(formData.isActive));
       if (selectedImage) {
         data.append("image", selectedImage);
       }
@@ -169,6 +179,46 @@ export default function CategoriesPage() {
     } else {
       setSelectedIds(prev => prev.filter(i => i !== id));
     }
+  };
+
+  const handleToggleActive = async (id: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+    
+    // Optimistic update
+    setCategories(categories.map(c => 
+      c._id === id ? { ...c, isActive: newStatus } : c
+    ));
+
+    const promise = fetch(`/api/categories/${id}`, {
+      method: "PUT",
+      body: (() => {
+        const formData = new FormData();
+        formData.append("isActive", String(newStatus));
+        return formData;
+      })(),
+    }).then(async (res) => {
+      const result = await res.json();
+      if (!result.success) {
+        // Revert on failure
+        setCategories(categories.map(c => 
+          c._id === id ? { ...c, isActive: currentStatus } : c
+        ));
+        throw new Error(result.error || "Failed to update status");
+      }
+      return result;
+    });
+
+    toast.promise(promise, {
+      loading: 'Updating status...',
+      success: `Category ${newStatus ? 'activated' : 'deactivated'} successfully`,
+      error: (err) => {
+        // Revert on error
+        setCategories(categories.map(c => 
+          c._id === id ? { ...c, isActive: currentStatus } : c
+        ));
+        return err.message || 'Failed to update status';
+      },
+    });
   };
 
   const handleBulkDelete = async () => {
@@ -251,20 +301,21 @@ export default function CategoriesPage() {
                 <th className="px-6 py-3">Image</th>
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Caption</th>
+                <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                     <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
                     Loading categories...
                   </td>
                 </tr>
               ) : filteredCategories.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                     No categories found.
                   </td>
                 </tr>
@@ -291,6 +342,20 @@ export default function CategoriesPage() {
                     </td>
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{cat.name}</td>
                     <td className="px-6 py-4 text-gray-500 dark:text-gray-400 truncate max-w-xs">{cat.caption}</td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => handleToggleActive(cat._id, cat.isActive)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-french-blue focus:ring-offset-2 ${
+                          cat.isActive ? 'bg-french-blue' : 'bg-gray-200 dark:bg-gray-700'
+                        }`}
+                      >
+                        <span
+                          className={`${
+                            cat.isActive ? 'translate-x-6' : 'translate-x-1'
+                          } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                        />
+                      </button>
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button 
@@ -353,6 +418,16 @@ export default function CategoriesPage() {
                   className="w-full px-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
                   placeholder="e.g. High quality beakers and flasks"
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Order</label>
+                <input 
+                  type="number"
+                  value={formData.order}
+                  onChange={(e) => setFormData({...formData, order: parseInt(e.target.value) || 0})}
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-deep-twilight-300 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua outline-none dark:text-white"
                 />
               </div>
 

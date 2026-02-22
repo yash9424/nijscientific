@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
     const body = await request.json();
     
-    const { name, mobile, email, password } = body;
+    const { name, mobile, email, password, isActive } = body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
       mobile,
       email,
       password: hashedPassword,
+      isActive: isActive !== undefined ? isActive : true,
     });
 
     // Remove password from response

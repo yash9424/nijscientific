@@ -44,6 +44,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Invalid credentials' }, { status: 401 });
     }
 
+    if (!user.isActive) {
+      return NextResponse.json({ success: false, error: 'Your account is inactive. Please contact administrator.' }, { status: 403 });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {

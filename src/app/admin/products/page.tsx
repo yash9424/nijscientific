@@ -17,6 +17,7 @@ interface Product {
   description: string;
   mainImage: string;
   images: string[];
+  isActive: boolean;
   hasTable?: boolean;
   tableColumns?: string[];
   tableRows?: string[][];
@@ -40,6 +41,7 @@ export default function ProductsPage() {
     name: "",
     category: "",
     description: "",
+    isActive: true,
   });
   
   const [mainImage, setMainImage] = useState<File | null>(null);
@@ -80,7 +82,8 @@ export default function ProductsPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch("/api/categories");
+      // Only fetch active categories for the dropdown as per requirements
+      const res = await fetch("/api/categories?active=true");
       const data = await res.json();
       if (data.success) {
         setCategories(data.data);
@@ -101,7 +104,8 @@ export default function ProductsPage() {
       setFormData({ 
         name: product.name, 
         category: categoryId || "", 
-        description: product.description 
+        description: product.description,
+        isActive: product.isActive 
       });
       setMainImagePreview(product.mainImage);
       setMainImage(null);
@@ -115,7 +119,7 @@ export default function ProductsPage() {
       setTableRows(product.tableRows || []);
     } else {
       setEditingProduct(null);
-      setFormData({ name: "", category: "", description: "" });
+      setFormData({ name: "", category: "", description: "", isActive: true });
       setMainImagePreview(null);
       setMainImage(null);
       setAdditionalImages([]);
@@ -250,6 +254,7 @@ export default function ProductsPage() {
       data.append("name", formData.name);
       data.append("category", formData.category);
       data.append("description", formData.description);
+      data.append("isActive", String(formData.isActive));
       
       // Table Data
       data.append("hasTable", hasTable.toString());
@@ -368,6 +373,46 @@ export default function ProductsPage() {
     });
   };
 
+  const handleToggleActive = async (id: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+    
+    // Optimistic update
+    setProducts(products.map(p => 
+      p._id === id ? { ...p, isActive: newStatus } : p
+    ));
+
+    const promise = fetch(`/api/products/${id}`, {
+      method: "PUT",
+      body: (() => {
+        const formData = new FormData();
+        formData.append("isActive", String(newStatus));
+        return formData;
+      })(),
+    }).then(async (res) => {
+      const result = await res.json();
+      if (!result.success) {
+        // Revert on failure
+        setProducts(products.map(p => 
+          p._id === id ? { ...p, isActive: currentStatus } : p
+        ));
+        throw new Error(result.error || "Failed to update status");
+      }
+      return result;
+    });
+
+    toast.promise(promise, {
+      loading: 'Updating status...',
+      success: `Product ${newStatus ? 'activated' : 'deactivated'} successfully`,
+      error: (err) => {
+        // Revert on error
+        setProducts(products.map(p => 
+          p._id === id ? { ...p, isActive: currentStatus } : p
+        ));
+        return err.message || 'Failed to update status';
+      },
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -464,6 +509,20 @@ export default function ProductsPage() {
                     </td>
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{product.name}</td>
                     <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{product.category?.name || 'Uncategorized'}</td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => handleToggleActive(product._id, product.isActive)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-french-blue focus:ring-offset-2 ${
+                          product.isActive ? 'bg-french-blue' : 'bg-gray-200 dark:bg-gray-700'
+                        }`}
+                      >
+                        <span
+                          className={`${
+                            product.isActive ? 'translate-x-6' : 'translate-x-1'
+                          } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                        />
+                      </button>
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button 
@@ -540,6 +599,28 @@ export default function ProductsPage() {
                         <option key={cat._id} value={cat._id}>{cat.name}</option>
                     ))}
                     </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                  <div className="flex items-center gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setFormData({...formData, isActive: !formData.isActive})}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-french-blue focus:ring-offset-2 ${
+                        formData.isActive ? 'bg-french-blue' : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
+                    >
+                      <span
+                        className={`${
+                          formData.isActive ? 'translate-x-6' : 'translate-x-1'
+                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      />
+                    </button>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {formData.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
                 </div>
               </div>
 

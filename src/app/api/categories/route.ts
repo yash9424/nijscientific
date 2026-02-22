@@ -3,10 +3,14 @@ import dbConnect from '@/lib/db';
 import Category from '@/models/Category';
 import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    const categories = await Category.find({}).sort({ createdAt: -1 });
+    const { searchParams } = new URL(request.url);
+    const activeOnly = searchParams.get('active') === 'true';
+    
+    const query = activeOnly ? { isActive: true } : {};
+    const categories = await Category.find(query).sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: categories });
   } catch (error) {
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
@@ -21,6 +25,7 @@ export async function POST(request: NextRequest) {
     const name = formData.get('name') as string;
     const caption = formData.get('caption') as string;
     const file = formData.get('image') as File;
+    const isActive = formData.get('isActive');
 
     if (!file) {
       return NextResponse.json({ success: false, error: 'No image uploaded' }, { status: 400 });
@@ -34,6 +39,7 @@ export async function POST(request: NextRequest) {
       name,
       caption,
       image: imageUrl,
+      isActive: isActive !== null ? isActive === 'true' : true,
     });
 
     return NextResponse.json({ success: true, data: category }, { status: 201 });

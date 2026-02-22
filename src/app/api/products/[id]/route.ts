@@ -39,6 +39,7 @@ export async function PUT(
     const tableRows = formData.get('tableRows') ? JSON.parse(formData.get('tableRows') as string) : [];
     const mainImageFile = formData.get('mainImage') as File | null;
     const additionalImagesFiles = formData.getAll('images') as File[];
+    const isActive = formData.get('isActive');
     
     const product = await Product.findById(id);
 
@@ -84,6 +85,7 @@ export async function PUT(
     product.hasTable = hasTable;
     product.tableColumns = tableColumns;
     product.tableRows = tableRows;
+    if (isActive !== null) product.isActive = isActive === 'true';
 
     await product.save();
 

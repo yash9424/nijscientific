@@ -4,11 +4,16 @@ import Product from '@/models/Product';
 import Category from '@/models/Category'; // Import to ensure registration
 import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await dbConnect();
+    const { searchParams } = new URL(request.url);
+    const activeOnly = searchParams.get('active') === 'true';
+    
+    const query = activeOnly ? { isActive: true } : {};
+    
     // Populate category to get the name
-    const products = await Product.find({})
+    const products = await Product.find(query)
       .populate('category', 'name')
       .sort({ createdAt: -1 });
       
@@ -31,6 +36,7 @@ export async function POST(request: NextRequest) {
     const tableRows = formData.get('tableRows') ? JSON.parse(formData.get('tableRows') as string) : [];
     const mainImageFile = formData.get('mainImage') as File;
     const additionalImagesFiles = formData.getAll('images') as File[];
+    const isActive = formData.get('isActive');
 
     if (!mainImageFile) {
       return NextResponse.json({ success: false, error: 'Main image is required' }, { status: 400 });
@@ -58,6 +64,7 @@ export async function POST(request: NextRequest) {
       hasTable,
       tableColumns,
       tableRows,
+      isActive: isActive !== null ? isActive === 'true' : true,
     });
 
     return NextResponse.json({ success: true, data: product }, { status: 201 });

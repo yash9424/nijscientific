@@ -13,6 +13,7 @@ interface Hero {
   mediaUrl: string;
   mediaType: 'image' | 'video';
   order: number;
+  isActive: boolean;
 }
 
 export default function HeroPage() {
@@ -30,6 +31,7 @@ export default function HeroPage() {
     headline: "",
     subheadline: "",
     order: 0,
+    isActive: true,
   });
   
   const [mediaFile, setMediaFile] = useState<File | null>(null);
@@ -67,14 +69,15 @@ export default function HeroPage() {
         tag: hero.tag, 
         headline: hero.headline, 
         subheadline: hero.subheadline,
-        order: hero.order
+        order: hero.order,
+        isActive: hero.isActive
       });
       setMediaPreview(hero.mediaUrl);
       setMediaType(hero.mediaType);
       setMediaFile(null);
     } else {
       setEditingHero(null);
-      setFormData({ tag: "", headline: "", subheadline: "", order: 0 });
+      setFormData({ tag: "", headline: "", subheadline: "", order: 0, isActive: true });
       setMediaPreview(null);
       setMediaType('image');
       setMediaFile(null);
@@ -116,6 +119,7 @@ export default function HeroPage() {
       data.append("headline", formData.headline);
       data.append("subheadline", formData.subheadline);
       data.append("order", formData.order.toString());
+      data.append("isActive", String(formData.isActive));
       
       if (mediaFile) {
         data.append("media", mediaFile);
@@ -220,6 +224,46 @@ export default function HeroPage() {
     });
   };
 
+  const handleToggleActive = async (id: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+    
+    // Optimistic update
+    setHeroes(heroes.map(h => 
+      h._id === id ? { ...h, isActive: newStatus } : h
+    ));
+
+    const promise = fetch(`/api/hero/${id}`, {
+      method: "PUT",
+      body: (() => {
+        const formData = new FormData();
+        formData.append("isActive", String(newStatus));
+        return formData;
+      })(),
+    }).then(async (res) => {
+      const result = await res.json();
+      if (!result.success) {
+        // Revert on failure
+        setHeroes(heroes.map(h => 
+          h._id === id ? { ...h, isActive: currentStatus } : h
+        ));
+        throw new Error(result.error || "Failed to update status");
+      }
+      return result;
+    });
+
+    toast.promise(promise, {
+      loading: 'Updating status...',
+      success: `Slide ${newStatus ? 'activated' : 'deactivated'} successfully`,
+      error: (err) => {
+        // Revert on error
+        setHeroes(heroes.map(h => 
+          h._id === id ? { ...h, isActive: currentStatus } : h
+        ));
+        return err.message || 'Failed to update status';
+      },
+    });
+  };
+
   return (
     <div className="p-6 lg:p-8 space-y-6">
       {/* Header */}
@@ -305,41 +349,63 @@ export default function HeroPage() {
                     className="object-cover"
                   />
                 )}
-                <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button 
-                    onClick={() => handleOpenModal(hero)}
-                    className="p-2 bg-white/90 dark:bg-deep-twilight-200/90 text-gray-700 dark:text-gray-200 rounded-lg hover:text-french-blue dark:hover:text-sky-aqua shadow-sm"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(hero._id)}
-                    className="p-2 bg-white/90 dark:bg-deep-twilight-200/90 text-gray-700 dark:text-gray-200 rounded-lg hover:text-red-500 shadow-sm"
-                  >
-                    <Trash className="w-4 h-4" />
-                  </button>
-                </div>
                 {hero.tag && (
-                  <span className="absolute top-2 left-2 px-2 py-1 bg-french-blue/90 text-white text-xs font-semibold rounded-lg backdrop-blur-sm">
+                  <span className="absolute bottom-2 left-2 px-2 py-1 bg-french-blue/90 text-white text-xs font-semibold rounded-lg backdrop-blur-sm">
                     {hero.tag}
                   </span>
                 )}
               </div>
               
               {/* Content */}
-              <div className="p-4 space-y-2">
-                <h3 className="font-bold text-gray-900 dark:text-white truncate" title={hero.headline}>
-                  {hero.headline}
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                  {hero.subheadline}
-                </p>
-                <div className="pt-2 flex items-center justify-between text-xs text-gray-400">
+              <div className="p-4 space-y-3">
+                <div>
+                    <h3 className="font-bold text-gray-900 dark:text-white truncate" title={hero.headline}>
+                    {hero.headline}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">
+                    {hero.subheadline}
+                    </p>
+                </div>
+                
+                <div className="flex items-center justify-between text-xs text-gray-400 border-b border-gray-100 dark:border-gray-700 pb-3">
                   <span className="flex items-center gap-1">
                     {hero.mediaType === 'video' ? <Video className="w-3 h-3" /> : <ImageIcon className="w-3 h-3" />}
-                    {hero.mediaType === 'video' ? 'Video Slide' : 'Image Slide'}
+                    {hero.mediaType === 'video' ? 'Video' : 'Image'}
                   </span>
                   <span>Order: {hero.order}</span>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                    <button
+                        onClick={() => handleToggleActive(hero._id, hero.isActive)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-french-blue focus:ring-offset-2 ${
+                          hero.isActive ? 'bg-french-blue' : 'bg-gray-200 dark:bg-gray-700'
+                        }`}
+                        title={hero.isActive ? 'Deactivate' : 'Activate'}
+                      >
+                        <span
+                          className={`${
+                            hero.isActive ? 'translate-x-6' : 'translate-x-1'
+                          } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                        />
+                    </button>
+                    
+                    <div className="flex items-center gap-1">
+                        <button 
+                            onClick={() => handleOpenModal(hero)}
+                            className="p-2 text-gray-500 hover:text-french-blue dark:text-gray-400 dark:hover:text-sky-aqua transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                            title="Edit"
+                        >
+                            <Edit className="w-4 h-4" />
+                        </button>
+                        <button 
+                            onClick={() => handleDelete(hero._id)}
+                            className="p-2 text-gray-500 hover:text-red-500 dark:text-gray-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                            title="Delete"
+                        >
+                            <Trash className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
               </div>
             </div>

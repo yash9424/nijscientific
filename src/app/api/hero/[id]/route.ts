@@ -17,6 +17,7 @@ export async function PUT(
     const subheadline = formData.get('subheadline') as string;
     const mediaFile = formData.get('media') as File | null;
     const order = parseInt(formData.get('order') as string) || 0;
+    const isActive = formData.get('isActive');
 
     const hero = await Hero.findById(id);
 
@@ -40,6 +41,7 @@ export async function PUT(
     hero.headline = headline || hero.headline;
     hero.subheadline = subheadline !== undefined ? subheadline : hero.subheadline;
     hero.order = order;
+    if (isActive !== null) hero.isActive = isActive === 'true';
 
     await hero.save();
 

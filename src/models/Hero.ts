@@ -7,6 +7,7 @@ export interface IHero extends Document {
   mediaUrl: string;
   mediaType: 'image' | 'video';
   order: number;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -44,6 +45,10 @@ const HeroSchema: Schema = new Schema(
     order: {
       type: Number,
       default: 0,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {

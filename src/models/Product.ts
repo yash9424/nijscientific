@@ -9,6 +9,7 @@ export interface IProduct extends Document {
   hasTable: boolean;
   tableColumns: string[];
   tableRows: string[][];
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,6 +51,10 @@ const ProductSchema: Schema = new Schema(
     tableRows: {
       type: [[String]], // Array of arrays of strings
       default: [],
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {

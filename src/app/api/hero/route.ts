@@ -3,10 +3,15 @@ import dbConnect from '@/lib/db';
 import Hero from '@/models/Hero';
 import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    const heroes = await Hero.find({}).sort({ order: 1, createdAt: -1 });
+    const { searchParams } = new URL(request.url);
+    const activeOnly = searchParams.get('active') === 'true';
+    
+    const query = activeOnly ? { isActive: true } : {};
+    
+    const heroes = await Hero.find(query).sort({ order: 1, createdAt: -1 });
     return NextResponse.json({ success: true, data: heroes });
   } catch (error) {
     return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
@@ -23,6 +28,7 @@ export async function POST(request: NextRequest) {
     const subheadline = formData.get('subheadline') as string;
     const mediaFile = formData.get('media') as File;
     const order = parseInt(formData.get('order') as string) || 0;
+    const isActive = formData.get('isActive');
 
     if (!headline) {
       return NextResponse.json({ success: false, error: 'Headline is required' }, { status: 400 });
@@ -46,6 +52,7 @@ export async function POST(request: NextRequest) {
       mediaUrl,
       mediaType,
       order,
+      isActive: isActive !== null ? isActive === 'true' : true,
     });
 
     return NextResponse.json({ success: true, data: hero }, { status: 201 });

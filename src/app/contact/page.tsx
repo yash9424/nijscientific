@@ -16,9 +16,36 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission logic here
-    console.log("Form submitted:", formData)
-    alert("Message sent successfully! (This is a demo)")
+
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      alert("Please fill all fields")
+      return
+    }
+
+    const phone = "919409015580"
+
+    const itemsText =
+      inquiryItems.length === 0
+        ? "No products selected."
+        : inquiryItems
+            .map(
+              (item, index) =>
+                `${index + 1}. ${item.name} (ID: ${item._id})`
+            )
+            .join("\n")
+
+    const text = encodeURIComponent(
+      `New inquiry from website\n\n` +
+      `Name: ${formData.name}\n` +
+      `Email: ${formData.email}\n` +
+      `Subject: ${formData.subject}\n\n` +
+      `Message:\n${formData.message}\n\n` +
+      `Products:\n${itemsText}`
+    )
+
+    const url = `https://wa.me/${phone}?text=${text}`
+    window.open(url, "_blank")
+
     setFormData({ name: "", email: "", subject: "", message: "" })
   }
 
@@ -156,7 +183,7 @@ export default function ContactPage() {
                   type="submit"
                   className="w-full bg-french-blue-600 hover:bg-french-blue-700 dark:bg-french-blue-500 dark:hover:bg-french-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
-                  <Send className="h-4 w-4" /> Send Message
+                  <Send className="h-4 w-4" /> Send on WhatsApp
                 </button>
               </form>
             </div>

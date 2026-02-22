@@ -15,6 +15,7 @@ export async function PUT(
     const name = formData.get('name') as string;
     const caption = formData.get('caption') as string;
     const file = formData.get('image') as File | null;
+    const isActive = formData.get('isActive');
 
     const category = await Category.findById(id);
 
@@ -37,6 +38,7 @@ export async function PUT(
     category.name = name || category.name;
     category.caption = caption || category.caption;
     category.image = imageUrl;
+    if (isActive !== null) category.isActive = isActive === 'true';
 
     await category.save();
 

@@ -4,6 +4,7 @@ export interface ICategory extends Document {
   name: string;
   image: string;
   caption: string;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +25,10 @@ const CategorySchema: Schema = new Schema(
       type: String,
       required: [true, 'Please provide a caption'],
       maxlength: [200, 'Caption cannot be more than 200 characters'],
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {

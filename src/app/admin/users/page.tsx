@@ -10,6 +10,7 @@ interface UserType {
   mobile: string;
   email: string;
   createdAt: string;
+  isActive: boolean;
 }
 
 export default function UsersPage() {
@@ -56,7 +57,7 @@ export default function UsersPage() {
         name: user.name, 
         mobile: user.mobile, 
         email: user.email,
-        password: "" // Don't show password on edit
+        password: "", // Don't show password on edit
       });
     } else {
       setEditingUser(null);
@@ -225,6 +226,7 @@ export default function UsersPage() {
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Email</th>
                 <th className="px-6 py-3">Mobile</th>
+                <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3 text-right">Actions</th>
               </tr>
             </thead>

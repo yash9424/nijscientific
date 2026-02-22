@@ -12,7 +12,7 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
     
-    const { name, mobile, email, password } = body;
+    const { name, mobile, email, password, isActive } = body;
 
     const user = await User.findById(id);
     if (!user) {
@@ -22,6 +22,7 @@ export async function PUT(
     if (name) user.name = name;
     if (mobile) user.mobile = mobile;
     if (email) user.email = email;
+    if (typeof isActive !== 'undefined') user.isActive = isActive;
     
     if (password && password.trim() !== '') {
       user.password = await bcrypt.hash(password, 10);
