@@ -18,14 +18,20 @@ export function HomeProducts() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    fetch('/api/products')
+    fetch('/api/products?active=true')
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
+        if (data.success && data.data) {
           setProducts(data.data.slice(0, 10)); // Show latest 10 products
+        } else {
+          console.error('Failed to load products:', data.error);
+          setProducts([]);
         }
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error('Error fetching products:', err);
+        setProducts([]);
+      });
   }, []);
 
   useEffect(() => {

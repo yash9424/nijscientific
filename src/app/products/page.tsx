@@ -58,15 +58,23 @@ export default function ProductsPage() {
       const productsData = await productsRes.json();
       const categoriesData = await categoriesRes.json();
 
-      if (productsData.success) {
+      if (productsData.success && productsData.data) {
         setProducts(productsData.data);
+      } else {
+        console.error('Products API error:', productsData.error);
+        setProducts([]);
       }
       
-      if (categoriesData.success) {
+      if (categoriesData.success && categoriesData.data) {
         setCategories(categoriesData.data);
+      } else {
+        console.error('Categories API error:', categoriesData.error);
+        setCategories([]);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+      setProducts([]);
+      setCategories([]);
     } finally {
       setLoading(false);
     }

@@ -19,7 +19,12 @@ export async function GET(request: NextRequest) {
       
     return NextResponse.json({ success: true, data: products });
   } catch (error) {
-    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 });
+    console.error('Error in GET /api/products:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: (error as Error).message || 'Failed to fetch products',
+      data: [] 
+    }, { status: 500 });
   }
 }
 
