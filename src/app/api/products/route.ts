@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import dbConnect from '@/lib/db';
 import Category from '@/models/Category'; // Import BEFORE Product to ensure registration
 import Product from '@/models/Product';
@@ -7,6 +8,12 @@ import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
+    
+    // Ensure Category model is loaded
+    if (!mongoose.models.Category) {
+      await import('@/models/Category');
+    }
+    
     const { searchParams } = new URL(request.url);
     const activeOnly = searchParams.get('active') === 'true';
     
