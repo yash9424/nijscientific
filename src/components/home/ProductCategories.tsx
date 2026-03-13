@@ -175,7 +175,7 @@ export function ProductCategories() {
                 return (
                   <div 
                     key={category._id} 
-                    className="flex-[0_0_75%] sm:flex-[0_0_50%] md:flex-[0_0_30%] lg:flex-[0_0_20%] min-w-0 pl-4 relative"
+                    className="flex-[0_0_75%] sm:flex-[0_0_20%] md:flex-[0_0_20%] lg:flex-[0_0_20%] min-w-0 pl-4 relative"
                     style={{
                       transform: `translateX(${style.translateX}) scale(${style.scale})`,
                       opacity: style.opacity,
@@ -183,7 +183,7 @@ export function ProductCategories() {
                       transition: 'transform 0.15s ease-out, opacity 0.15s ease-out' 
                     }}
                   >
-                    <Link href="#" className="group relative block aspect-[3/4] overflow-hidden rounded-[2rem] bg-white dark:bg-gray-900 shadow-xl dark:shadow-2xl">
+                    <Link href={`/products?category=${encodeURIComponent(category.name)}`} className="group relative block aspect-[3/4] overflow-hidden rounded-[2rem] bg-white dark:bg-gray-900 shadow-xl dark:shadow-2xl">
                       <Image
                         src={category.image}
                         alt={category.name}

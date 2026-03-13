@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react"
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube, Twitter } from "lucide-react"
 import Link from "next/link"
 
 export function Footer() {
@@ -15,16 +15,19 @@ export function Footer() {
               Your trusted source for high-quality laboratory equipment, glassware, and scientific supplies for research, education, and industry.
             </p>
             <div className="flex gap-4 mt-6">
-              <Link href="#" className="text-gray-400 hover:text-sky-aqua-400 transition-colors">
+              <Link href="https://www.facebook.com/share/1LufUSzZv2/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sky-aqua-400 transition-colors">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-sky-aqua-400 transition-colors">
+              <Link href="https://www.instagram.com/nij_scientific?igsh=dzJydWFzaXZjZGlp" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sky-aqua-400 transition-colors">
                 <Instagram className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-sky-aqua-400 transition-colors">
+              <Link href="https://www.linkedin.com/in/nij-scientific-00a6883aa?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sky-aqua-400 transition-colors">
                 <Linkedin className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-sky-aqua-400 transition-colors">
+              <Link href="https://youtube.com/@nijscientific?si=nSCYbyB4cKpNwN4l" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sky-aqua-400 transition-colors">
+                <Youtube className="h-5 w-5" />
+              </Link>
+              <Link href="#" className="text-gray-400 hover:text-sky-aqua-400 transition-colors" title="Twitter - Coming Soon">
                 <Twitter className="h-5 w-5" />
               </Link>
             </div>

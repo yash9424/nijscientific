@@ -15,6 +15,7 @@ interface Product {
 
 export function HomeProducts() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     fetch('/api/products')
@@ -27,20 +28,49 @@ export function HomeProducts() {
       .catch(err => console.error(err));
   }, []);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const section = document.getElementById('products-section');
+    if (section) {
+      observer.observe(section);
+    }
+
+    return () => {
+      if (section) {
+        observer.unobserve(section);
+      }
+    };
+  }, []);
+
   return (
     <section className="py-16 bg-gray-50 dark:bg-deep-twilight-100" id="products">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8" id="products-section">
         <div className="text-center mb-12">
           <h2 className="text-sm font-semibold text-french-blue-600 dark:text-french-blue-400 tracking-wide uppercase">Discover Quality</h2>
           <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Our Products</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {products.map((product) => (
+          {products.map((product, index) => (
             <Link 
               href={`/products/${product._id}`} 
               key={product._id} 
-              className="bg-white dark:bg-deep-twilight-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col group block"
+              className={`bg-white dark:bg-deep-twilight-200 rounded-lg shadow-sm hover:shadow-lg overflow-hidden flex flex-col group block transition-all duration-700 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+              }`}
+              style={{ 
+                transitionDelay: `${index * 150}ms`,
+              }}
             >
               <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
                 <Image

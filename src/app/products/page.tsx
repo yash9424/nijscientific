@@ -26,17 +26,33 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All Categories")
   const [currentPage, setCurrentPage] = useState(1)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    // Get category from URL query parameter after component mounts
+    if (mounted && typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryParam = urlParams.get('category');
+      if (categoryParam) {
+        setSelectedCategory(decodeURIComponent(categoryParam));
+      }
+    }
+  }, [mounted]);
+
   const fetchData = async () => {
     try {
       setLoading(true);
       const [productsRes, categoriesRes] = await Promise.all([
-        fetch('/api/products'),
-        fetch('/api/categories')
+        fetch('/api/products?active=true'),
+        fetch('/api/categories?active=true')
       ]);
 
       const productsData = await productsRes.json();
