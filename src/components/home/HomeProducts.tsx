@@ -43,7 +43,7 @@ export function HomeProducts() {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.15, rootMargin: '0px 0px -100px 0px' }
     );
 
     const section = document.getElementById('products-section');
@@ -71,11 +71,11 @@ export function HomeProducts() {
             <Link 
               href={`/products/${product._id}`} 
               key={product._id} 
-              className={`bg-white dark:bg-deep-twilight-200 rounded-lg shadow-sm hover:shadow-lg overflow-hidden flex flex-col group block transition-all duration-700 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+              className={`bg-white dark:bg-deep-twilight-200 rounded-lg shadow-sm hover:shadow-lg overflow-hidden flex flex-col group block transition-all duration-1000 ease-out ${
+                isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-20 scale-95'
               }`}
               style={{ 
-                transitionDelay: `${index * 150}ms`,
+                transitionDelay: `${index * 120}ms`,
               }}
             >
               <div className="relative aspect-square bg-gray-100 dark:bg-gray-800 overflow-hidden">
