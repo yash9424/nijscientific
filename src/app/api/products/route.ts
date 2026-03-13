@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
+import Category from '@/models/Category'; // Import BEFORE Product to ensure registration
 import Product from '@/models/Product';
-import Category from '@/models/Category'; // Import to ensure registration
 import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 
 export async function GET(request: NextRequest) {
