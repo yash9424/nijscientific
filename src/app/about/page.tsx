@@ -1,4 +1,3 @@
-import Image from "next/image"
 import { BadgeDollarSign, Clock, Microscope, Headset } from "lucide-react"
 
 export default function AboutPage() {
@@ -85,27 +84,14 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">Our Directors</h2>
           
-          <div className="grid md:grid-cols-2 gap-8 justify-items-center">
-            <div className="bg-white dark:bg-deep-twilight-200 p-6 rounded-lg shadow-sm text-center w-full max-w-sm border border-gray-100 dark:border-deep-twilight-300">
-              <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-                <Image
-                  src="https://placehold.co/256x256/png?text=Hemant"
-                  alt="Hemant Limbani"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Hemant Limbani</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Managing Director</p>
-            </div>
-
+          <div className="grid md:grid-cols-1 gap-8 justify-items-center">
             <div className="bg-white dark:bg-deep-twilight-200 p-6 rounded-lg shadow-sm text-center w-full max-w-sm border border-gray-100 dark:border-deep-twilight-300">
               <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                 <svg className="w-20 h-20 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Yash Limbani</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Hemant Limbani</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">Managing Director</p>
             </div>
           </div>
