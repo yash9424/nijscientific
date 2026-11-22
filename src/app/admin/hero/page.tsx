@@ -526,6 +526,15 @@ export default function HeroPage() {
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {mediaType === 'video' ? 'Background Video' : 'Background Image'}
                 </label>
+                <div className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2.5 text-xs leading-5 text-sky-900 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200">
+                  <p className="font-semibold">
+                    Recommended size: 1920 × 750 px (landscape){mediaType === 'video' ? ' · MP4, under 20MB, 10–20 sec loop' : ' · JPG/WebP, under 1MB'}
+                  </p>
+                  <p className="mt-1">
+                    Headline text appears on the <b>left side</b>, so keep the main product/subject in the <b>center-right</b>.
+                    On mobile the left and right edges get cropped, so avoid important details near the edges.
+                  </p>
+                </div>
                 <div 
                   onClick={() => fileInputRef.current?.click()}
                   className="relative h-48 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-french-blue dark:hover:border-sky-aqua transition-colors bg-gray-50 dark:bg-deep-twilight-300/50 overflow-hidden group"

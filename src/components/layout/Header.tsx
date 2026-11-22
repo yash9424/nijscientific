@@ -4,8 +4,9 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
-import { Menu, X, Phone, Mail, MapPin, Sun, Moon } from "lucide-react"
+import { Menu, X, Sun, Moon, ClipboardList, Phone, Mail, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useInquiry } from "@/context/InquiryContext"
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -16,124 +17,130 @@ const navigation = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
+  const { inquiryItems } = useInquiry()
 
   useEffect(() => {
     setMounted(true)
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  if (pathname.startsWith("/admin") || pathname === "/login") {
-    return null
-  }
+  useEffect(() => setMobileMenuOpen(false), [pathname])
 
-  const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const newTheme = theme === "dark" ? "light" : "dark";
+  if (pathname.startsWith("/admin") || pathname === "/login") return null
 
-    // @ts-ignore
-    if (!document.startViewTransition) {
-      setTheme(newTheme);
-      return;
-    }
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href))
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark")
 
-    const x = e.clientX;
-    const y = e.clientY;
-    const right = window.innerWidth - x;
-    const bottom = window.innerHeight - y;
-    const maxRadius = Math.hypot(
-      Math.max(x, right),
-      Math.max(y, bottom)
-    );
-
-    // @ts-ignore
-    const transition = document.startViewTransition(() => {
-      setTheme(newTheme);
-    });
-
-    transition.ready.then(() => {
-      const clipPath = [
-        `circle(0px at ${x}px ${y}px)`,
-        `circle(${maxRadius}px at ${x}px ${y}px)`,
-      ];
-
-      document.documentElement.animate(
-        {
-          clipPath: clipPath,
-        },
-        {
-          duration: 500,
-          easing: "ease-in-out",
-          pseudoElement: "::view-transition-new(root)",
-        }
-      );
-    });
-  };
+  const iconBtn =
+    "relative grid h-10 w-10 place-items-center rounded-md border border-slate-200 text-deep-twilight transition hover:border-bright-teal-blue hover:text-bright-teal-blue dark:border-white/15 dark:text-slate-200 dark:hover:text-sky-aqua"
 
   return (
-    <header className="bg-white dark:bg-deep-twilight-100 shadow-md sticky top-0 z-50">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between p-4 lg:px-8" aria-label="Global">
-        <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5 text-2xl font-bold text-deep-twilight dark:text-sky-aqua">
+    <header className="sticky top-0 z-50">
+      {/* Top contact bar */}
+      <div className="hidden bg-deep-twilight text-[13px] text-slate-300 md:block">
+        <div className="container-x flex h-10 items-center justify-between">
+          <div className="flex items-center gap-6">
+            <a href="tel:+919409015580" className="inline-flex items-center gap-2 transition hover:text-white">
+              <Phone className="h-3.5 w-3.5 text-sky-aqua" /> +91 94090 15580
+            </a>
+            <a href="mailto:nij_l@yahoo.in" className="inline-flex items-center gap-2 transition hover:text-white">
+              <Mail className="h-3.5 w-3.5 text-sky-aqua" /> nij_l@yahoo.in
+            </a>
+          </div>
+          <span className="inline-flex items-center gap-2">
+            <MapPin className="h-3.5 w-3.5 text-sky-aqua" /> Rajkot, Gujarat · First Scientific Mall in Saurashtra/Kutch
+          </span>
+        </div>
+      </div>
+
+      <div className={cn("bg-white transition-shadow dark:bg-deep-twilight-100", scrolled ? "shadow-md" : "border-b border-slate-200 dark:border-white/10")}>
+        <nav className="container-x flex h-[72px] items-center justify-between" aria-label="Global">
+          <Link href="/" className="flex items-center gap-3">
             <span className="sr-only">Nij Scientific</span>
-            {/* Placeholder for Logo */}
-            <span className="text-french-blue dark:text-white">Nij</span> Scientific
+            <span className="grid h-10 w-10 place-items-center rounded-md bg-deep-twilight font-display text-lg font-bold text-white dark:bg-bright-teal-blue">
+              N
+            </span>
+            <span className="leading-tight">
+              <span className="block font-display text-xl font-bold tracking-tight text-deep-twilight dark:text-white">NIJ SCIENTIFIC</span>
+              <span className="block text-[11px] font-medium uppercase tracking-[0.18em] text-bright-teal-blue dark:text-sky-aqua">
+                Laboratory Solutions
+              </span>
+            </span>
           </Link>
-        </div>
-        <div className="flex items-center gap-4 lg:hidden">
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-deep-twilight-200 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {mounted && theme === "dark" ? (
-              <Sun className="h-5 w-5 text-yellow-400" />
-            ) : (
-              <Moon className="h-5 w-5 text-deep-twilight dark:text-white" />
-            )}
-          </button>
-          <button
-            type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-200"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <span className="sr-only">Open main menu</span>
-            {mobileMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
-          </button>
-        </div>
-        <div className="hidden lg:flex lg:items-center lg:gap-x-12">
-          {navigation.map((item) => (
-            <Link key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-bright-teal-blue-600 dark:hover:text-sky-aqua-400 transition-colors">
-              {item.name}
+
+          <div className="hidden items-center gap-8 lg:flex">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "relative py-6 text-sm font-semibold transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:origin-left after:bg-bright-teal-blue after:transition-transform",
+                  isActive(item.href)
+                    ? "text-deep-twilight after:scale-x-100 dark:text-white"
+                    : "text-slate-500 after:scale-x-0 hover:text-deep-twilight hover:after:scale-x-100 dark:text-slate-400 dark:hover:text-white"
+                )}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link href="/contact" className={iconBtn} aria-label="Inquiry list">
+              <ClipboardList className="h-[18px] w-[18px]" />
+              {mounted && inquiryItems.length > 0 && (
+                <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-bright-teal-blue px-1 text-[11px] font-bold text-white">
+                  {inquiryItems.length}
+                </span>
+              )}
             </Link>
-          ))}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-deep-twilight-200 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {mounted && theme === "dark" ? (
-              <Sun className="h-5 w-5 text-yellow-400" />
-            ) : (
-              <Moon className="h-5 w-5 text-deep-twilight dark:text-white" />
-            )}
-          </button>
-        </div>
-      </nav>
-      {/* Mobile menu */}
-      <div className={cn("lg:hidden", mobileMenuOpen ? "block" : "hidden")}>
-        <div className="space-y-1 px-4 pb-3 pt-2 bg-white dark:bg-deep-twilight-100 border-t dark:border-deep-twilight-200">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-light-cyan dark:hover:bg-deep-twilight-200 hover:text-bright-teal-blue dark:hover:text-sky-aqua"
-              onClick={() => setMobileMenuOpen(false)}
+            <button onClick={toggleTheme} className={iconBtn} aria-label="Toggle theme">
+              {mounted && theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+            </button>
+            <Link href="/contact" className="btn-primary ml-2 hidden lg:inline-flex">
+              Request a Quote
+            </Link>
+            <button
+              type="button"
+              className="grid h-10 w-10 place-items-center text-deep-twilight lg:hidden dark:text-slate-200"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {item.name}
-            </Link>
-          ))}
-        </div>
+              <span className="sr-only">Open main menu</span>
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </nav>
+
+        {mobileMenuOpen && (
+          <div className="border-t border-slate-200 lg:hidden dark:border-white/10">
+            <div className="container-x space-y-1 py-4">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    "block rounded-md px-4 py-3 text-base font-semibold",
+                    isActive(item.href)
+                      ? "bg-bright-teal-blue/10 text-bright-teal-blue dark:text-sky-aqua"
+                      : "text-deep-twilight hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/5"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <Link href="/contact" className="btn-primary mt-3 w-full">
+                Request a Quote
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   )

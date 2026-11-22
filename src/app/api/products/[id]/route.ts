@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
+import '@/models/Category'; // register Category schema before populate
 import Product from '@/models/Product';
 import { uploadMedia, deleteMedia } from '@/lib/cloudinary';
 

@@ -41,18 +41,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [pathname]);
 
   useEffect(() => {
+    // Auth is enforced server-side in src/proxy.ts
     setMounted(true);
-    // Simple Auth Check
-    const cookies = document.cookie.split(';');
-    const sessionCookie = cookies.find(c => c.trim().startsWith('admin_session='));
-    
-    if (!sessionCookie) {
-      router.push('/login');
-    }
-  }, [router]);
+  }, []);
 
-  const handleLogout = () => {
-    document.cookie = "admin_session=; path=/; max-age=0";
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
     router.push('/login');
   };
 
@@ -70,7 +64,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="h-full flex flex-col">
           {/* Sidebar Header */}
           <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700 px-6">
-            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-french-blue to-bright-teal-blue">
+            <h1 className="font-display text-xl font-bold text-gradient">
               Nij Admin
             </h1>
           </div>
@@ -86,7 +80,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   className={cn(
                     "flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
                     isActive 
-                      ? "bg-french-blue/10 dark:bg-sky-aqua/10 text-french-blue dark:text-sky-aqua shadow-sm" 
+                      ? "bg-gradient-to-r from-french-blue to-bright-teal-blue text-white shadow-lg shadow-bright-teal-blue/30" 
                       : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-deep-twilight-300 hover:text-gray-900 dark:hover:text-gray-100"
                   )}
                 >

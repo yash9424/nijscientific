@@ -22,37 +22,37 @@ export function Preloader() {
       setTimeout(() => {
         setShow(false);
         document.body.style.overflow = "auto";
-      }, 500);
-    }, 3000);
+      }, 600);
+    }, 2400);
 
     return () => {
       clearTimeout(timer);
       document.body.style.overflow = "auto";
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!show) return null;
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white dark:bg-deep-twilight-100 transition-opacity duration-500 ${
-        fadeOut ? "opacity-0" : "opacity-100"
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden bg-background transition-all duration-600 ${
+        fadeOut ? "opacity-0 scale-105" : "opacity-100"
       }`}
     >
-      <div className="mb-6">
-        <Image
-          src="/logo 02.png"
-          alt="Nij Scientific logo"
-          width={360}
-          height={360}
-          priority
-        />
+      <div className="pointer-events-none absolute inset-0 grid-bg mask-fade" />
+      <div className="pointer-events-none absolute h-[28rem] w-[28rem] rounded-full bg-turquoise-surf/20 blur-3xl animate-float-slow" />
+
+      <div className="relative animate-fade-up">
+        <Image src="/logo 02.png" alt="Nij Scientific logo" width={300} height={300} priority />
       </div>
 
-      <div className="overflow-hidden px-4 text-center">
-        <p className="text-lg md:text-xl text-french-blue dark:text-sky-aqua font-medium">
-          First Scientific Mall in Saurashtra/Kutch
-        </p>
+      <p className="relative mt-4 px-4 text-center font-display text-lg font-medium text-french-blue animate-fade-up [animation-delay:200ms] md:text-xl dark:text-sky-aqua">
+        First Scientific Mall in Saurashtra/Kutch
+      </p>
+
+      <div className="relative mt-8 h-1 w-48 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+        <div className="h-full w-full rounded-full bg-gradient-to-r from-french-blue to-turquoise-surf animate-progress" />
       </div>
     </div>
   );

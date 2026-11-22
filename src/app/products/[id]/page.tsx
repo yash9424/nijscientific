@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useParams, useRouter } from "next/navigation"
-import { ChevronLeft, Loader2, ArrowLeft, Plus, Check, Minus } from "lucide-react"
+import { Loader2, ArrowLeft, Plus, Minus, Star, ShieldCheck, Truck, Headset, MessageSquareText, Send } from "lucide-react"
+import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { useInquiry } from "@/context/InquiryContext"
 import { toast } from "sonner"
@@ -129,303 +130,296 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-deep-twilight-100">
-        <Loader2 className="w-8 h-8 animate-spin text-french-blue" />
+      <div className="container-x grid min-h-[70vh] gap-10 py-12 lg:grid-cols-2">
+        <div className="aspect-square animate-pulse rounded-xl bg-slate-200 dark:bg-white/5" />
+        <div className="space-y-4 pt-6">
+          <div className="h-6 w-32 animate-pulse rounded-full bg-slate-200 dark:bg-white/5" />
+          <div className="h-12 w-3/4 animate-pulse rounded-2xl bg-slate-200 dark:bg-white/5" />
+          <div className="h-32 animate-pulse rounded-2xl bg-slate-200 dark:bg-white/5" />
+        </div>
       </div>
     )
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-deep-twilight-100 gap-4">
-        <p className="text-xl text-gray-600 dark:text-gray-300">Product not found</p>
-        <Link 
-          href="/products"
-          className="px-4 py-2 bg-french-blue text-white rounded-lg hover:bg-french-blue/90 transition-colors"
-        >
-          Back to Shop
+      <div className="container-x flex min-h-[60vh] flex-col items-center justify-center text-center">
+        <p className="font-display text-2xl font-semibold text-slate-900 dark:text-white">Product not found</p>
+        <Link href="/products" className="btn-primary mt-6">
+          <ArrowLeft className="h-4 w-4" /> Back to Shop
         </Link>
       </div>
     )
   }
 
+  const inInquiry = isInInquiry(product._id)
+  const gallery = [product.mainImage, ...(product.images || [])]
+  const avgRating = reviews.length ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : 0
+
+  const toggleInquiry = () => {
+    if (inInquiry) {
+      removeFromInquiry(product._id)
+      toast.info("Removed from Inquiry", {
+        description: "Product has been removed from your inquiry list.",
+      })
+    } else {
+      addToInquiry({ _id: product._id, name: product.name, mainImage: product.mainImage })
+      toast.success("Added to Inquiry", {
+        description:
+          "Your inquiry product has been added to the contact us page. Please fill the form and submit to send this to admin side.",
+        duration: 5000,
+      })
+    }
+  }
+
   return (
-    <div className="bg-gray-50 dark:bg-deep-twilight-100 min-h-screen pb-12">
-      {/* Header / Breadcrumb */}
-      <div className="bg-white dark:bg-deep-twilight-200 border-b dark:border-deep-twilight-300">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link 
-            href="/products"
-            className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-french-blue dark:hover:text-sky-aqua transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Shop
+    <div className="relative min-h-screen overflow-hidden pb-24">
+      <div className="aurora pointer-events-none absolute inset-x-0 top-0 h-[520px] opacity-60" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] grid-bg mask-fade" />
+
+      {/* Breadcrumb */}
+      <div className="container-x relative pt-8">
+        <nav className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <Link href="/products" className="inline-flex items-center gap-2 font-medium transition hover:text-bright-teal-blue dark:hover:text-sky-aqua">
+            <ArrowLeft className="h-4 w-4" /> Back to Shop
           </Link>
+          {product.category?.name && (
+            <>
+              <span className="text-slate-300 dark:text-slate-600">/</span>
+              <Link
+                href={`/products?category=${encodeURIComponent(product.category.name)}`}
+                className="transition hover:text-bright-teal-blue dark:hover:text-sky-aqua"
+              >
+                {product.category.name}
+              </Link>
+            </>
+          )}
+        </nav>
+      </div>
+
+      <div className="container-x relative mt-8 grid gap-10 lg:grid-cols-2 lg:gap-16">
+        {/* Left Column: Images */}
+        <div className="lg:sticky lg:top-32 lg:self-start">
+          <div className="glow-border relative aspect-square overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
+            <Image
+              key={selectedImage}
+              src={selectedImage || "/placeholder.png"}
+              alt={product.name}
+              fill
+              priority
+              className="object-contain p-4 animate-fade-up"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </div>
+
+          {product.images && product.images.length > 0 && (
+            <div className="scrollbar-hide mt-4 flex gap-3 overflow-x-auto pb-1">
+              {gallery.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(img)}
+                  className={cn(
+                    "relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 bg-white transition-all md:h-24 md:w-24 dark:bg-white/5",
+                    selectedImage === img
+                      ? "border-bright-teal-blue ring-4 ring-bright-teal-blue/20 dark:border-sky-aqua"
+                      : "border-transparent opacity-70 hover:opacity-100"
+                  )}
+                >
+                  <Image src={img} alt={idx === 0 ? "Main view" : `View ${idx}`} fill className="object-cover" sizes="96px" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Product Info */}
+        <div>
+          <span className="eyebrow">{product.category?.name || "Category"}</span>
+          <h1 className="mt-4 text-3xl font-bold leading-tight text-slate-900 md:text-5xl dark:text-white">{product.name}</h1>
+
+          {reviews.length > 0 && (
+            <div className="mt-4 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex text-amber-400">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} className={cn("h-4 w-4", s <= Math.round(avgRating) ? "fill-current" : "opacity-25")} />
+                ))}
+              </div>
+              {avgRating.toFixed(1)} · {reviews.length} review{reviews.length > 1 ? "s" : ""}
+            </div>
+          )}
+
+          <p className="mt-6 whitespace-pre-line text-lg leading-relaxed text-slate-600 dark:text-slate-300">{product.description}</p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <button
+              onClick={toggleInquiry}
+              className={cn(
+                inInquiry
+                  ? "inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-6 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400"
+                  : "btn-primary"
+              )}
+            >
+              {inInquiry ? (
+                <>
+                  <Minus className="h-4 w-4" /> Remove from Inquiry
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4" /> Add to Inquiry
+                </>
+              )}
+            </button>
+            {inInquiry && (
+              <Link href="/contact" className="btn-ghost">
+                <Send className="h-4 w-4" /> Go to Inquiry
+              </Link>
+            )}
+          </div>
+
+          <div className="mt-8 grid grid-cols-3 gap-3">
+            {[
+              { icon: ShieldCheck, t: "Quality Checked" },
+              { icon: Truck, t: "On-Time Delivery" },
+              { icon: Headset, t: "Expert Support" },
+            ].map(({ icon: Icon, t }) => (
+              <div key={t} className="rounded-xl border border-slate-200/80 bg-white/60 p-4 text-center backdrop-blur dark:border-white/10 dark:bg-white/[0.03]">
+                <span className="icon-chip mx-auto">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-300">{t}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Specifications Table */}
+          {product.hasTable && (
+            <div className="card mt-10 overflow-hidden !rounded-xl">
+              <div className="border-b border-slate-200/80 bg-gradient-to-r from-french-blue/5 to-turquoise-surf/5 px-6 py-4 dark:border-white/10">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Specifications</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 dark:bg-white/5">
+                    <tr>
+                      {product.tableColumns.map((col, idx) => (
+                        <th key={idx} className="whitespace-nowrap px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                          {col}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                    {product.tableRows.map((row, rIdx) => (
+                      <tr key={rIdx} className="transition hover:bg-bright-teal-blue/[0.04]">
+                        {row.map((cell, cIdx) => (
+                          <td key={cIdx} className="whitespace-nowrap px-6 py-3.5 text-slate-700 dark:text-slate-300">
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Left Column: Images */}
-          <div className="space-y-4">
-            {/* Main Image */}
-            <div className="relative aspect-square bg-white dark:bg-deep-twilight-200 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm">
-              <Image
-                src={selectedImage || '/placeholder.png'}
-                alt={product.name}
-                fill
-                className="object-contain p-4"
-                priority
+      {/* Reviews */}
+      <div className="container-x mt-24 grid gap-8 lg:grid-cols-5">
+        <div className="card p-6 md:p-8 lg:col-span-2 lg:self-start">
+          <h2 className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-white">
+            <MessageSquareText className="h-5 w-5 text-bright-teal-blue dark:text-sky-aqua" /> Write a review
+          </h2>
+          <form className="mt-6 space-y-5" onSubmit={handleSubmitReview}>
+            <div>
+              <label className="label">Your name</label>
+              <input
+                type="text"
+                value={reviewForm.name}
+                onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
+                className="input"
+                placeholder="Enter your name"
+                required
               />
             </div>
-
-            {/* Additional Images Gallery */}
-            {(product.images && product.images.length > 0) && (
-              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
-                {/* Include Main Image in gallery as well to switch back */}
-                <button
-                  onClick={() => setSelectedImage(product.mainImage)}
-                  className={`flex-shrink-0 relative w-24 h-24 rounded-lg overflow-hidden border-2 transition-colors ${
-                    selectedImage === product.mainImage
-                      ? "border-french-blue"
-                      : "border-transparent hover:border-gray-300 dark:hover:border-gray-600"
-                  }`}
-                >
-                  <Image
-                    src={product.mainImage}
-                    alt="Main view"
-                    fill
-                    className="object-cover"
-                  />
-                </button>
-                
-                {product.images.map((img, idx) => (
+            <div>
+              <label className="label">Rating</label>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
                   <button
-                    key={idx}
-                    onClick={() => setSelectedImage(img)}
-                    className={`flex-shrink-0 relative w-24 h-24 rounded-lg overflow-hidden border-2 transition-colors ${
-                      selectedImage === img
-                        ? "border-french-blue"
-                        : "border-transparent hover:border-gray-300 dark:hover:border-gray-600"
-                    }`}
+                    key={star}
+                    type="button"
+                    onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                    className="p-1 transition hover:scale-110"
+                    aria-label={`${star} star`}
                   >
-                    <Image
-                      src={img}
-                      alt={`View ${idx + 1}`}
-                      fill
-                      className="object-cover"
+                    <Star
+                      className={cn(
+                        "h-7 w-7",
+                        reviewForm.rating >= star ? "fill-amber-400 text-amber-400" : "text-slate-300 dark:text-slate-600"
+                      )}
                     />
                   </button>
                 ))}
-              </div>
-            )}
-          </div>
-
-          {/* Right Column: Product Info */}
-          <div className="space-y-8">
-            <div>
-              <div className="inline-block px-3 py-1 bg-french-blue/10 dark:bg-sky-aqua/10 text-french-blue dark:text-sky-aqua rounded-full text-sm font-medium mb-4">
-                {product.category?.name || 'Category'}
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                {product.name}
-              </h1>
-              <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300">
-                <p className="whitespace-pre-wrap">{product.description}</p>
-              </div>
-
-              <div className="mt-6">
-                <button
-                  onClick={() => {
-                    if (isInInquiry(product._id)) {
-                      removeFromInquiry(product._id);
-                      toast.info("Removed from Inquiry", {
-                        description: "Product has been removed from your inquiry list."
-                      });
-                    } else {
-                      addToInquiry({
-                        _id: product._id,
-                        name: product.name,
-                        mainImage: product.mainImage
-                      });
-                      toast.success("Added to Inquiry", {
-                        description: "Your inquiry product has been added to the contact us page. Please fill the form and submit to send this to admin side.",
-                        duration: 5000,
-                      });
-                    }
-                  }}
-                  className={`px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                    isInInquiry(product._id)
-                      ? "bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"
-                      : "bg-french-blue text-white hover:bg-french-blue/90"
-                  }`}
-                >
-                  {isInInquiry(product._id) ? (
-                    <>
-                      <Minus className="w-4 h-4" /> Remove from Inquiry
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4" /> Add to Inquiry
-                    </>
-                  )}
-                </button>
+                <span className="ml-2 text-sm text-slate-500 dark:text-slate-400">{reviewForm.rating} of 5</span>
               </div>
             </div>
-
-            {/* Specifications Table - Moved back to Right Column */}
-            {product.hasTable && (
-              <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
-                <div className="bg-gray-50 dark:bg-deep-twilight-300 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="font-semibold text-gray-900 dark:text-white">Specifications</h3>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left border-collapse">
-                    <thead className="bg-white dark:bg-deep-twilight-200">
-                      <tr>
-                        {product.tableColumns.map((col, idx) => (
-                          <th key={idx} className="px-6 py-3 font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap border border-gray-200 dark:border-gray-700">
-                            {col}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-deep-twilight-200">
-                      {product.tableRows.map((row, rIdx) => (
-                        <tr key={rIdx} className="hover:bg-gray-50 dark:hover:bg-deep-twilight-300/50 transition-colors">
-                          {row.map((cell, cIdx) => (
-                            <td key={cIdx} className="px-6 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap border border-gray-200 dark:border-gray-700">
-                              {cell}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
+            <div>
+              <label className="label">Review</label>
+              <textarea
+                value={reviewForm.content}
+                onChange={(e) => setReviewForm({ ...reviewForm, content: e.target.value })}
+                className="input min-h-[120px] resize-none"
+                placeholder="Share your experience with this product"
+                required
+              />
+            </div>
+            <button type="submit" disabled={submittingReview} className="btn-primary w-full">
+              {submittingReview && <Loader2 className="h-4 w-4 animate-spin" />}
+              Submit review
+            </button>
+          </form>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 lg:gap-12">
-          <div className="bg-white dark:bg-deep-twilight-200 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Write a review
-            </h2>
-            <form className="space-y-4" onSubmit={handleSubmitReview}>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Your name
-                </label>
-                <input
-                  type="text"
-                  value={reviewForm.name}
-                  onChange={(e) =>
-                    setReviewForm({ ...reviewForm, name: e.target.value })
-                  }
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-deep-twilight-300 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua"
-                  placeholder="Enter your name"
-                  required
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Rating
-                </label>
-                <div className="flex items-center gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() =>
-                        setReviewForm({ ...reviewForm, rating: star })
-                      }
-                      className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm ${
-                        reviewForm.rating >= star
-                          ? "bg-french-blue text-white border-french-blue"
-                          : "bg-white dark:bg-deep-twilight-300 text-gray-500 dark:text-gray-300 border-gray-200 dark:border-gray-600"
-                      }`}
-                    >
-                      {star}
-                    </button>
-                  ))}
-                  <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
-                    {reviewForm.rating} of 5
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Review
-                </label>
-                <textarea
-                  value={reviewForm.content}
-                  onChange={(e) =>
-                    setReviewForm({ ...reviewForm, content: e.target.value })
-                  }
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-deep-twilight-300 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-french-blue dark:focus:ring-sky-aqua min-h-[100px]"
-                  placeholder="Share your experience with this product"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={submittingReview}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-french-blue hover:bg-french-blue/90 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-70"
-              >
-                {submittingReview && (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                )}
-                Submit review
-              </button>
-            </form>
-          </div>
-
-          <div className="bg-white dark:bg-deep-twilight-200 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Reviews
-              </h2>
+        <div className="lg:col-span-3">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            Reviews {reviews.length > 0 && <span className="text-slate-400">({reviews.length})</span>}
+          </h2>
+          {reviewsLoading ? (
+            <div className="mt-6 flex items-center gap-2 text-slate-500">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading reviews...
             </div>
-            {reviewsLoading ? (
-              <div className="flex items-center justify-center py-8 text-gray-500 dark:text-gray-400">
-                <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                Loading reviews...
-              </div>
-            ) : reviews.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                No reviews yet. Be the first to review this product.
-              </p>
-            ) : (
-              <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
-                {reviews.map((review) => (
-                  <div
-                    key={review._id}
-                    className="border border-gray-100 dark:border-gray-700 rounded-xl p-4"
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="font-medium text-sm text-gray-900 dark:text-white">
-                        {review.name}
-                      </p>
-                      <span className="text-xs text-french-blue dark:text-sky-aqua font-semibold">
-                        {review.rating} / 5
-                      </span>
+          ) : reviews.length === 0 ? (
+            <p className="mt-6 rounded-xl border border-dashed border-slate-300 p-10 text-center text-slate-500 dark:border-white/15 dark:text-slate-400">
+              No reviews yet. Be the first to review this product.
+            </p>
+          ) : (
+            <div className="mt-6 space-y-4">
+              {reviews.map((review) => (
+                <div key={review._id} className="card !rounded-xl p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-french-blue to-turquoise-surf text-sm font-bold text-white">
+                        {review.name.slice(0, 1).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-900 dark:text-white">{review.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{new Date(review.createdAt).toLocaleDateString()}</p>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      {review.content}
-                    </p>
+                    <div className="flex text-amber-400">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star key={s} className={cn("h-4 w-4", s <= review.rating ? "fill-current" : "opacity-25")} />
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">{review.content}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
